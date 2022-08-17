@@ -1,0 +1,20 @@
+{
+    "name": "poster834/gto",
+    "description": "Glonass Trouble Organiser",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "poster834",
+            "email": "poster834@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Gto\\": "src/Gto/"
+        }
+    },
+    "require": {
+        "erusev/parsedown": "^1.7"
+    }
+}
