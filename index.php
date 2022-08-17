@@ -1,7 +1,5 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
-// echo "index";
-
 
 try{
     $routes = require __DIR__ . '/../gto/src/routes.php';
@@ -10,7 +8,6 @@ try{
     $isRouteFound = false;
 
     foreach ($routes as $pattern => $controllerAndAction) {
-        
         preg_match($pattern, $route, $matches);  
         
         if (!empty($matches)) {
