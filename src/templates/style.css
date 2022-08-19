@@ -25,3 +25,11 @@ body{
 #userName{
     color:blue;
 }
+#login, #password, #fio{
+    width: 100%;
+}
+label{
+    float: left;
+    margin-top: 10px;
+    margin-left: 10px;
+}
