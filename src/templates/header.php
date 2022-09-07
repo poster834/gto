@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="src/templates/style.css">
     <link rel="stylesheet" href="vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
-    <title>Система мониторинга транспорта</title>
+    <title>Система мониторинга транспорта <?=$companyName;?></title>
 </head>
 
 <body>

@@ -3,7 +3,6 @@ namespace Gtm\Controllers;
 
 class MainController extends AbstractController
 {
-
     public function main()
     {        
         $authData = null;
@@ -15,16 +14,12 @@ class MainController extends AbstractController
 
     public function admin()
     {
-        $authData = null;
-        $isUserAdmin = true;
-        if ($isUserAdmin) {
+        $authData = $this->db->query('SELECT * FROM `users`;');
+
             $this->view->renderHtml('admin/mainAdmin.php',[
                 'companyName'=>'',
                 'authData'=>$authData,
-            ]);    
-        } else {
-            $this->main();
-        } 
+            ]);
     }
 
     public function auth()

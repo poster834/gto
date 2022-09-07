@@ -4,7 +4,8 @@
         AdminMenu
     </div>
     <div class="col">
-        <?php var_dump($_POST);?>
+        <pre>
+        <?php print_r($authData);?>
         AdminMain
     </div>
 </div>
