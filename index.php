@@ -2,7 +2,7 @@
 require __DIR__ . '/vendor/autoload.php';
 
 try{
-    $routes = require __DIR__ . '/../gto/src/routes.php';
+    $routes = require __DIR__ . '/../gtm/src/routes.php';
 
     $route = $_GET['route'] ?? '';
     $isRouteFound = false;

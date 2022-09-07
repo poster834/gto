@@ -1,6 +1,6 @@
 <?php
 
-namespace Gto\Controllers;
+namespace Gtm\Controllers;
 
 class UsersController extends AbstractController
 {

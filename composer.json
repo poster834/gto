@@ -1,6 +1,6 @@
 {
-    "name": "poster834/gto",
-    "description": "Glonass Trouble Organiser",
+    "name": "poster834/gtm",
+    "description": "Glonass Trouble Monitoring",
     "type": "project",
     "license": "proprietary",
     "authors": [
@@ -11,7 +11,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Gto\\": "src/Gto/"
+            "Gtm\\": "src/Gtm/"
         }
     },
     "require": {

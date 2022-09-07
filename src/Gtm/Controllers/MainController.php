@@ -1,5 +1,5 @@
 <?php
-namespace Gto\Controllers;
+namespace Gtm\Controllers;
 
 class MainController extends AbstractController
 {

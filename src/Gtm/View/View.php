@@ -1,6 +1,6 @@
 <?php
 
-namespace Gto\View;
+namespace Gtm\View;
 
 class View
 {

@@ -17,8 +17,7 @@
 */
 
 return [
-    '~^$~' => [Gto\Controllers\MainController::class, 'main'],
-    '~^admin$~' => [Gto\Controllers\MainController::class, 'admin'],
-    '~^auth$~' => [Gto\Controllers\MainController::class, 'auth'],
-    '~^registration$~' => [Gto\Controllers\UsersController::class, 'registration'],
+    '~^$~' => [Gtm\Controllers\MainController::class, 'main'],
+    '~^admin$~' => [Gtm\Controllers\MainController::class, 'admin'],
+    '~^auth$~' => [Gtm\Controllers\MainController::class, 'auth'],
 ];

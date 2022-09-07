@@ -1,7 +1,7 @@
 <?php
-namespace Gto\Controllers;
+namespace Gtm\Controllers;
 
-use Gto\View\View;
+use Gtm\View\View;
 
 abstract class AbstractController
 {
