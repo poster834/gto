@@ -19,5 +19,8 @@
 return [
     '~^$~' => [Gtm\Controllers\MainController::class, 'main'],
     '~^admin$~' => [Gtm\Controllers\MainController::class, 'admin'],
-    '~^auth$~' => [Gtm\Controllers\MainController::class, 'auth'],
+    '~^user$~' => [Gtm\Controllers\MainController::class, 'user'],
+    '~^auth$~' => [Gtm\Controllers\UsersController::class, 'login'],
+    '~^company$~' => [Gtm\Controllers\MainController::class, 'company'],
+    '~^logout$~' => [Gtm\Controllers\UsersController::class, 'logout'],
 ];

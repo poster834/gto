@@ -1,32 +1,41 @@
 <?php
-
 namespace Gtm\Controllers;
+
+
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+use Gtm\Models\Users\User;
+use Gtm\Models\Users\UsersAuthService;
+use Gtm\Models\Roles\Role;
 
 class UsersController extends AbstractController
 {
-//     public function registration()
-//     {
-//         $error = [];
-        
-//         if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-//             $error[] = 'Некорректно указан Email';
-//         }
+    public function login()
+    {
+        if (!empty($_POST)) {
+           try {
+            $user = User::login($_POST);
+            UsersAuthService::createToken($user);
+            $roleName = Role::getById($user->getRoleId())->name;
+            header("Location: /gtm/$roleName");
+            exit();
+            } catch (\Gtm\Exceptions\InvalidArgumentException $e){
+                $this->view->renderHtml('main/main.php',[
+                    'companyName'=>'',
+                    'error'=>$e->getMessage(),
+                ]);
+                return;
+            }
+        }        
 
-//         if (strlen($_POST['fio']) < 5) {
-//             $error[] = 'Некорректно указано ФИО';
-//         }
-        
-//         if (strlen($_POST['phone']) < 10) {
-//             $error[] = 'Некорректно указан Телефон';
-//         }
+        $this->view->renderHtml('main/main.php',[
+            'companyName'=>'',
+            ]);
+    }
 
-//         $this->view->renderHtml('main/registration.php',[
-//             'companyName'=>'ГК Талина',
-//             'error'=>$error
-//         ]);  
-
-//         if(empty($error)){
-//             // mail();
-//         }
-//     }
+    public function logout()
+    {
+        setcookie('token', '', -1, '/', '', false, true);
+        header('Location: /gtm');
+    }
 }

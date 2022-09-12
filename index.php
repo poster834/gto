@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/vendor/autoload.php';
 
 try{
@@ -17,7 +18,7 @@ try{
     }
 
     if (!$isRouteFound) {
-        throw new \Exception();
+        throw new \Gtm\Exceptions\NotFoundException();
     }
 
     unset($matches[0]);
@@ -26,6 +27,15 @@ try{
 
     $controller = new $controllerName();
     $controller -> $actionName(...$matches);
-} catch (\Exception $e) {
-      var_dump($e);
+} catch (\Gtm\Exceptions\NotFoundException $e) {
+    $view = new \Gtm\View\View(__DIR__. '/src/templates/errors/');
+    $view->renderHtml('404.php', ['error'=>$e->getMessage()],404);
+} catch (\Gtm\Exceptions\InvalidArgumentException $e){
+
+    
+} catch (\Gtm\Exceptions\NotAllowException $e) {
+    $view = new \Gtm\View\View(__DIR__. '/src/templates/errors/');
+    $view->renderHtml('deny.php', ['error'=>$e->getMessage()],404);
+} catch (\Exception $e){
+    echo $e->getMessage();
 }

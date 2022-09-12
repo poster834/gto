@@ -16,6 +16,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
 }
 
 .authData button{
@@ -32,4 +33,34 @@ label{
     float: left;
     margin-top: 10px;
     margin-left: 10px;
+}
+
+.adminMenu{
+    text-align: left;
+    list-style: none;
+}
+
+.adminMenu li{
+    margin-bottom: 5px;
+    background-color: #aaa;
+    width: 100%;
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+.adminMenu li:active, .adminMenu li:hover{
+    background-color: #640707;
+    color: #fff;
+}
+
+.adminMenu a{
+    text-decoration: none;
+    color: inherit;
+}
+
+
+#loginName,
+#logoutBtn{
+    display: flex;
+    justify-content: space-evenly;
 }

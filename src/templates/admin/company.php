@@ -12,8 +12,7 @@
 
     </div>
     <div class="col">
-
-        AdminMain
+    Информация о компании
     </div>
 </div>
 <?php include('../gtm/src/templates/footer.php');?>

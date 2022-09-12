@@ -33,7 +33,7 @@ class Db
         $this->pdo->exec('SET NAMES UTF8');
     }
 
-    public function query(string $sql, $params = [])
+    public function query(string $sql, array $params = [], string $className = 'stdClass')
     {
         $sth = $this->pdo->prepare($sql);
         $result = $sth->execute($params);
@@ -41,7 +41,12 @@ class Db
         if ($result === false) {
             return null;
         }
-        return $sth->fetchAll();
+        return $sth->fetchAll(\PDO::FETCH_CLASS, $className);
+    }
+
+    public function getLastInsertId():int
+    {
+        return (int) $this->pdo->lastInsertId();
     }
 
 }

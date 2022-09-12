@@ -1,5 +1,4 @@
 <?php
-
 namespace Gtm\View;
 
 class View
@@ -12,12 +11,12 @@ class View
         $this->templatePath = $templatePath;
     }
 
-    public function setVar(string $name, $value): void
+    public function setVar(string $name, $value)
     {
         $this->extraVars[$name] = $value;
     }
 
-    public function renderHtml(string $templateName, array $vars = [], int $code = 200):void
+    public function renderHtml(string $templateName, array $vars = [], int $code = 200)
     {
         http_response_code($code);
         extract($this->extraVars);

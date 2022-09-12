@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="src/templates/style.css">
     <link rel="stylesheet" href="vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
-    <title>Система мониторинга транспорта <?=$companyName;?></title>
+    <title>Система мониторинга транспорта <?= !empty($companyName) ? $companyName:'Наименование компании';?></title>
 </head>
 
 <body>
@@ -21,12 +21,21 @@
             <div class="col">
                 <div class="companyData">
                     <h2>Система мониторинга транспорта</h2>
-                    <h4><?=$companyName;?></h4>
+                    <h4><?= !empty($companyName) ? $companyName:'Наименование компании';?></h4>
                 </div>
             </div>
             <div class="col-2 d-Flex">
-                <?php if (isset($authData)):?>
-                    <div class="authData"><?=$authData?></div>
+                <?php if (isset($user)):?>
+                    <div class="authData">
+                        <div id="loginName">
+                            <?=$user->getName();?>
+                        </div>
+                        <div id="logoutBtn">
+                            <form action="logout" method="post">
+                            <input type="submit" class="btn btn-danger" value="Выйти">
+                            </form>
+                        </div>
+                    </div>
                 <?php else: ?>
                     <div class="authData">
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#enterModal">Вход</button>

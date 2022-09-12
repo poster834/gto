@@ -1,36 +1,39 @@
 <?php
 namespace Gtm\Controllers;
 
+use Gtm\Models\Users\User;
+
 class MainController extends AbstractController
 {
     public function main()
     {        
-        $authData = null;
         $this->view->renderHtml('main/main.php',[
             'companyName'=>'',
-            'authData'=>$authData,
         ]);
     }
 
     public function admin()
     {
-        $authData = $this->db->query('SELECT * FROM `users`;');
-
             $this->view->renderHtml('admin/mainAdmin.php',[
                 'companyName'=>'',
-                'authData'=>$authData,
-            ]);
+            ]);  
     }
 
-    public function auth()
+    public function user()
+    {        
+        $this->view->renderHtml('user/mainUser.php',[
+            'companyName'=>'',
+        ]);
+    }
+
+
+
+    public function company()
     {
-        $authData = null;
-        $isUserAdmin = true;
-        if ($isUserAdmin) {
-            $this->admin();
-        } else {
-            $this->main();
-        } 
+        $this->view->renderHtml('admin/company.php',[
+            'companyName'=>'',
+            
+        ]);  
     }
 
     
