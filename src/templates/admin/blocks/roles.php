@@ -1,11 +1,3 @@
-<?php
-    if (count($roles)>3) {
-        // echo "Нужен пагинатор";
-        // var_dump($pages);
-    } else {
-        // echo "Не нужен пагинатор";
-    }
-?>
 <div class="container-fluid">
     <div class="row">
         <div class="col-6">

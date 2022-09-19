@@ -30,11 +30,11 @@ class RolesController extends AbstractController
         if (!empty($_POST)) {
             try {
                 $role->updateFromArray($_POST);
-                $page = Role::getActivePageById($roleId);
+                $pageNumber = Role::getActivePageById($roleId);
             } catch (InvalidArgumentException $e) {
                 $this->view->renderHtml('errors/invalidArgument.php', ['error'=>$e->getMessage()]);
             }
-            echo $page;
+            echo $pageNumber;
         }
     }
 
@@ -48,8 +48,8 @@ class RolesController extends AbstractController
         } else {
             $role->delete();
         }
-        $page = Role::getActivePageById($id);
-        echo $page;
+        $pageNumber = Role::getActivePageById($id);
+        echo $pageNumber;
     }
 
     public function saveRole()
