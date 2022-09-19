@@ -7,6 +7,8 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="src/templates/style.css">
     <link rel="stylesheet" href="vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
+
     <title>Система мониторинга транспорта <?= !empty($companyName) ? $companyName:'Наименование компании';?></title>
 </head>
 

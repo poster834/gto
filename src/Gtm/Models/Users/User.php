@@ -32,14 +32,18 @@ class User extends ActiveRecordEntity
     protected $authToken;
 
     /** @var int*/
-    protected $role;
+    public $role;
 
     protected static function getTableName(): string
     {
         return 'users';
     }
+    protected static function getCountPerPage()
+    {
+        return 10;
+    }
 
-    public function getPasswordHash():string
+    private function getPasswordHash():string
     {
         return $this->passwordHash;
     }
@@ -77,11 +81,12 @@ class User extends ActiveRecordEntity
             throw new InvalidArgumentException('Нет пользователя с таким login');
         }
     
-        if (!password_verify($loginData['password'], $user->getPasswordHash())) {
+        if (!password_verify($loginData['password'].$user->getId(), $user->getPasswordHash())) {
             throw new InvalidArgumentException('Неправильный пароль');
         }
     
         $user->refreshAuthToken();
+        $user->refreshDateLogin();
         $user->save();
 
         return $user;      
@@ -95,6 +100,11 @@ class User extends ActiveRecordEntity
     public function getAuthToken()
     {
         return $this->authToken;
+    }
+
+    private function refreshDateLogin()
+    {
+        $this->dateLogin = date('Y-m-d');
     }
 
 }

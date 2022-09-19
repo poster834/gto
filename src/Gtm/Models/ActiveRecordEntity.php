@@ -24,11 +24,24 @@ abstract class ActiveRecordEntity
         return lcfirst(str_replace('_', '', ucwords($source, '_')));
     }
 
-    public function findAll()
+    public static function findAll()
     {
         $db = Db::getInstance();
         return $db->query('SELECT * FROM `'.static::getTableName().'`;', [], static::class);
     }
+
+    public static function findAllWhithPaginations($countPerPage)
+    {
+        $db = Db::getInstance();
+        $allItems = $db->query('SELECT * FROM `'.static::getTableName().'`;', [], static::class);
+        // return $allItems;
+
+        for ($i=0; $i < count($allItems); $i++) { 
+            echo $allItems[$i];
+        }
+    }
+
+
 
     public static function getById(int $id)
     {
@@ -134,6 +147,55 @@ private function insert(array $mappedProperties)
 
     }
 
+    public function delete()
+    {
+        $sql = 'DELETE FROM '. static::getTableName() . ' WHERE id = :id';
+        $db = Db::getInstance();
+        $db->query($sql, [':id' => $this->id], static::class);
+        $this->id = null;
+    }
+
+    public static function findLastAddedByColumn(string $columnName, $value)
+    {
+        $sql = 'SELECT * FROM '. static::getTableName() . ' WHERE `'.$columnName.'` = :value ORDER BY id DESC LIMIT 1;';
+        $db = Db::getInstance();
+        $result = $db->query($sql, [':value' => $value], static::class);
+
+        if ($result === []) {
+            return null;
+        }
+        return $result[0];
+    }
+
+    public static function findAllPerPage($page)
+    {
+        // $countPerPage = static::getCountPerPage();
+        $countPerPage = 10;
+        $startRow = ($page * $countPerPage)-$countPerPage;
+        $db = Db::getInstance();
+        $result = $db->query('SELECT * FROM `'.static::getTableName().'` LIMIT '.$startRow.','.$countPerPage.';', [], static::class);
+        return $result;
+    }
+
+    public static function getPagesPaginator()
+    {
+        // $countPerPage = static::getCountPerPage();
+        $countPerPage = 10;
+        $db = Db::getInstance();
+        $result = $db->query('SELECT COUNT(*) as count FROM `'.static::getTableName().'`;',[]);
+        return ceil((int)($result[0]->count) / $countPerPage);
+    }
+
+    public static function getActivePageById($id)
+    {
+        $countPerPage = static::getCountPerPage();
+        $db = Db::getInstance();
+        $result = $db->query('SELECT COUNT(*) as count FROM `'.static::getTableName().'` WHERE id<:id;',[':id'=>$id]);
+        return ceil((int)($result[0]->count) / $countPerPage);
+        // return $id;
+    }
+
     abstract protected static function getTableName();
+    abstract protected static function getCountPerPage();
 
 }

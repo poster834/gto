@@ -16,8 +16,7 @@ class UsersController extends AbstractController
            try {
             $user = User::login($_POST);
             UsersAuthService::createToken($user);
-            $roleName = Role::getById($user->getRoleId())->name;
-            header("Location: /gtm/$roleName");
+            header("Location: /gtm");
             exit();
             } catch (\Gtm\Exceptions\InvalidArgumentException $e){
                 $this->view->renderHtml('main/main.php',[

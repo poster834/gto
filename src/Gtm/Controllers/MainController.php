@@ -7,33 +7,25 @@ class MainController extends AbstractController
 {
     public function main()
     {        
-        $this->view->renderHtml('main/main.php',[
-            'companyName'=>'',
-        ]);
+        if (isset($this->user) && $this->user->isAdmin()) {
+            $this->admin();
+        } else {
+            $this->system();
+        }
     }
 
     public function admin()
     {
-            $this->view->renderHtml('admin/mainAdmin.php',[
-                'companyName'=>'',
-            ]);  
-    }
-
-    public function user()
-    {        
-        $this->view->renderHtml('user/mainUser.php',[
+        $this->view->renderHtml('admin/indexAdmin.php',[
             'companyName'=>'',
         ]);
     }
 
-
-
-    public function company()
+    public function system()
     {
-        $this->view->renderHtml('admin/company.php',[
+        $this->view->renderHtml('main/main.php',[
             'companyName'=>'',
-            
-        ]);  
+        ]); 
     }
 
     

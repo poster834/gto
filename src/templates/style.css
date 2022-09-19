@@ -15,7 +15,7 @@ body{
 .authData{
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     width: 100%;
 }
 
@@ -48,8 +48,8 @@ label{
     cursor: pointer;
 }
 
-.adminMenu li:active, .adminMenu li:hover{
-    background-color: #640707;
+.adminMenu li:hover, .activePoint{
+    background-color: #640707 !important;;
     color: #fff;
 }
 
@@ -63,4 +63,29 @@ label{
 #logoutBtn{
     display: flex;
     justify-content: space-evenly;
+}
+
+.tableBase td{
+    padding: 3px 5px;
+    border: 2px solid #aaa;
+}
+
+.tableBase .topTr{
+    font-weight: bold;
+}
+
+.editInput{
+    width: 100%;
+}
+
+.pagePaginator{
+    cursor: pointer;
+    background-color: #aaa;
+    padding: 2px 6px;
+    margin-right: 3px;
+}
+
+.pagePaginator:hover, .pagePaginator-active{
+    background-color: #640707;
+    color: #fff;
 }
