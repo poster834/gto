@@ -1,8 +1,10 @@
 <?php
 namespace Gtm\Models\Users;
 
-use \Gtm\Models\ActiveRecordEntity;
-use \Gtm\Exceptions\InvalidArgumentException;
+use Gtm\Models\ActiveRecordEntity;
+use Gtm\Exceptions\InvalidArgumentException;
+use Gtm\Exceptions\NotAllowException;
+use Gtm\Models\Roles\Role;
 
 class User extends ActiveRecordEntity
 {
@@ -16,8 +18,8 @@ class User extends ActiveRecordEntity
     /** @var string*/
     protected $name;
 
-    /** @var int*/
-    protected $active;
+    /** @var string*/
+    protected $blocking;
 
     /** @var string*/
     protected $email;
@@ -26,21 +28,24 @@ class User extends ActiveRecordEntity
     protected $dateLogin;
 
     /** @var string*/
-    protected $phoneNumber;
+    protected $phone;
 
     /** @var string*/
     protected $authToken;
 
     /** @var int*/
-    public $role;
+    public $roleId;
 
-    protected static function getTableName(): string
+    /** @var string*/
+    protected $salt;
+
+    protected static function getTableName()
     {
         return 'users';
     }
     protected static function getCountPerPage()
     {
-        return 10;
+        return 5;
     }
 
     private function getPasswordHash():string
@@ -52,18 +57,122 @@ class User extends ActiveRecordEntity
     {
         return $this->name;
     }
-
-    public function isAdmin()
+    
+    public function getLogin()
     {
-        if ($this->role == 1) {
+        return $this->login;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    public function isBlocked()
+    {
+        if($this->blocking == 'checked'){
             return true;
         }
         return false;
     }
 
+    public function getBlocking()
+    {
+        return $this->blocking;
+    }
+
+    public function getSalt()
+    {
+        return $this->salt;
+    }
+
+    public function getDateLogin()
+    {
+        if($this->dateLogin !== null)
+        {
+            return date('d.m.y',strtotime($this->dateLogin));
+        } else {
+            return $this->dateLogin;
+        }
+        
+    }
+
+    public function getRole()
+    {
+        return Role::getById($this->roleId);
+    }
+    
     public function getRoleId()
     {
         return $this->role;
+    }
+
+    public function getAuthToken()
+    {
+        return $this->authToken;
+    }
+
+    public function isAdmin()
+    {
+        if ($this->roleId == 1) {
+            return true;
+        }
+        return false;
+    }
+
+    protected function setLogin($newLogin)
+    {
+        $this->login = $newLogin;
+    }
+
+    protected function setName($newName)
+    {
+        $this->name = $newName;
+    }
+
+    protected function setEmail($newEmail)
+    {
+        $this->email = $newEmail;
+    }
+
+    protected function setPhone($newPhone)
+    {
+        $this->phone = $newPhone;
+    }
+
+    protected function setRoleId($newRoleId)
+    {
+        $this->roleId = $newRoleId;
+    }
+
+    protected function setPasswordHash($newPasswordHash)
+    {
+        $this->password_hash = $newPasswordHash;
+    }
+
+    protected function setAuthToken($newAuthToken)
+    {
+        $this->authToken = $newAuthToken;
+    }
+
+    protected function setBlocking($newBlocking)
+    {
+        $this->blocking = $newBlocking;
+    }
+
+    protected function setDateLogin($newDateLogin)
+    {
+        $this->dateLogin = $newDateLogin;
+    }
+    
+    protected function setSalt($newSalt)
+    {
+        $this->salt = $newSalt;
     }
 
     public static function login(array $loginData)
@@ -75,21 +184,25 @@ class User extends ActiveRecordEntity
             throw new InvalidArgumentException('Не передан login');
         }
     
-        $user = User::findOneByColumn('login', $loginData['login']);
+        $loginUser = User::findOneByColumn('login', $loginData['login']);
 
-        if ($user === null) {
+        if ($loginUser === null) {
             throw new InvalidArgumentException('Нет пользователя с таким login');
         }
+
+        if ($loginUser->isBlocked()) {
+            throw new InvalidArgumentException('Пользователь заблокирован. Обратитесь к администратору');
+        }
     
-        if (!password_verify($loginData['password'].$user->getId(), $user->getPasswordHash())) {
+        if (!password_verify($loginData['password'].$loginUser->getSalt(), $loginUser->getPasswordHash())) {
             throw new InvalidArgumentException('Неправильный пароль');
         }
     
-        $user->refreshAuthToken();
-        $user->refreshDateLogin();
-        $user->save();
+        $loginUser->refreshAuthToken();
+        $loginUser->refreshDateLogin();
+        $loginUser->save();
 
-        return $user;      
+        return $loginUser;      
     }
 
     private function refreshAuthToken()
@@ -97,14 +210,82 @@ class User extends ActiveRecordEntity
         $this->authToken = sha1(random_bytes(100)) . sha1(random_bytes(100));
     }
     
-    public function getAuthToken()
-    {
-        return $this->authToken;
-    }
-
     private function refreshDateLogin()
     {
         $this->dateLogin = date('Y-m-d');
     }
 
+    public function updateFromArray(array $fields)
+    {
+        $testUni = User::uniquenessColumnTest($fields,'login');
+
+
+        if (empty($fields['login'])) {
+            throw new InvalidArgumentException("Не указано поле: Логин");
+        }
+        if (empty($fields['name'])) {
+            throw new InvalidArgumentException("Не указано поле: ФИО");
+        }
+        if (empty($fields['email'])) {
+            throw new InvalidArgumentException("Не указано поле: E-mail");
+        }
+        if (empty($fields['phone'])) {
+            throw new InvalidArgumentException("Не указано поле: Телефон");
+        }
+        if ($fields['roleId']=='null') {
+            throw new InvalidArgumentException("Не указано поле: Группа");
+        }
+        if (!$testUni) {
+            throw new InvalidArgumentException("Значение поля 'Логин:' не уникально");
+        }
+        if(isset($fields['id']) && (int)$fields['id']/1 == 1){
+            $this->setRoleId(1);
+        } else {
+            $this->setRoleId((int)$fields['roleId']);
+            $this->refreshAuthToken();
+        }
+        $this->setLogin($fields['login']);
+        $this->setName($fields['name']);
+        $this->setEmail($fields['email']);
+        $this->setPhone($fields['phone']);
+        $this->setPassword($fields['login']);    
+        if (!isset($fields['id'])) {
+            $this->setSalt(bin2hex(random_bytes(5)));    
+        } else {
+            
+        }
+        $this->save();
+        return $this;
+    }
+
+    private function setPassword($txtPassword)
+    {
+        $this->setPasswordHash(password_hash($txtPassword.$this->getSalt(), PASSWORD_DEFAULT));
+    }
+
+    public function changePassword($fields)
+    {
+        if (empty($fields['password'])) {
+            throw new InvalidArgumentException("Не заполнено поле: Пароль");
+        } else {
+            $this->setPassword($fields['password']);
+            $this->save();
+        }
+    }
+
+    public function unBlock()
+    {
+        $this->blocking = null;
+        $this->save();
+        return $this;
+    }
+
+    public function block()
+    {
+        $this->blocking = 'checked';
+        $this->save();
+        return $this;
+    }
+
+    
 }

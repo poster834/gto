@@ -1,28 +1,28 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-6">
-            <h3>Список групп пользователей</h3>
+            <h3>Список направлений</h3>
             <table class='tableBase'>
                 <tr class='topTr'>
                     <td>id</td>
                     <td>Имя</td>
-                    <td>Описание </td>
+                    <td>Количество районов </td>
                     <td>Управление</td>
                 </tr>
-            <?php foreach ($roles as $role):?>
+            <?php foreach ($directions as $direction):?>
                     <tr>
                         <td>
-                            <?=$role->getId();?>
+                            <?=$direction->getId();?>
                         </td>
                         <td>
-                            <?=$role->getName();?>
+                            <?=$direction->getName();?>
                         </td>
                         <td>
-                            <?=$role->getDescription();?>
+                            <?=$direction->getRegionsCountInDirection();?>
                         </td>
                         <td>
-                            <span class='btn' id="editRow" onclick="showEditRow('roles',<?=$role->getId();?>)"><i class="fa fa-pencil" aria-hidden="true"></i></span>
-                            <span class='btn' id="deleteRow" onclick="deleteActiveRecord('roles',<?=$role->getId();?>)"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                            <span class='btn' id="editRow" onclick="showEditRow('directions',<?=$direction->getId();?>)"><i class="fa fa-pencil" aria-hidden="true"></i></span>
+                            <span class='btn' id="deleteRow" onclick="deleteActiveRecord('directions',<?=$direction->getId();?>)"><i class="fa fa-trash" aria-hidden="true"></i></span>
                         </td>
                     </tr>
             <?php endforeach;?>
@@ -31,11 +31,11 @@
             <div class="pagesPaginator"> Страницы:  
             <?php
             for($i = 1; $i <= $pages; $i++):?>
-                 <span id="pagePaginator<?=$i;?>" class="pagePaginator" onclick="showBlock('roles',<?=$i;?>)"><?=$i;?></span>
+                 <span id="pagePaginator<?=$i;?>" class="pagePaginator" onclick="showBlock('directions',<?=$i;?>)"><?=$i;?></span>
             <?php endfor;?>
             </div>
             <hr>
-        <span class='btn btn-secondary' id="showAddRow" onclick="showFormAddRow('addRole')"><i class="fa fa-plus" aria-hidden="true"> Добавить</i></span>
+        <span class='btn btn-secondary' id="showAddRow" onclick="showFormAddRow('addDirection')"><i class="fa fa-plus" aria-hidden="true"> Добавить</i></span>
         </div>
 
         <div class="col-6">

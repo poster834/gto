@@ -130,7 +130,6 @@ private function insert(array $mappedProperties)
         }
 
         $sql = 'INSERT INTO ' . static::getTableName() . '(' . implode(', ', $columns) . ') VALUES (' . implode(', ', $params) . ')';
-
         $db = Db::getInstance();
         $db->query($sql, $params2values, static::class);
         $this->id = $db->getLastInsertId();
@@ -140,11 +139,9 @@ private function insert(array $mappedProperties)
     private function refresh()
     {
         $objectFromDb = static::getById($this->id);
-
         foreach ($objectFromDb as $property => $value) {
             $this->$property = $value;
         }
-
     }
 
     public function delete()
@@ -155,23 +152,23 @@ private function insert(array $mappedProperties)
         $this->id = null;
     }
 
-    public static function findLastAddedByColumn(string $columnName, $value)
+    public static function findLastAddedId()
     {
-        $sql = 'SELECT * FROM '. static::getTableName() . ' WHERE `'.$columnName.'` = :value ORDER BY id DESC LIMIT 1;';
+        $sql = 'SELECT * FROM '. static::getTableName() . ' ORDER BY id DESC LIMIT 1;';
         $db = Db::getInstance();
-        $result = $db->query($sql, [':value' => $value], static::class);
+        $result = $db->query($sql, [], static::class);
 
         if ($result === []) {
             return null;
         }
-        return $result[0];
+        return $result[0]->getId();
     }
 
-    public static function findAllPerPage($page)
+    public static function findAllPerPage($pageNumber)
     {
-        // $countPerPage = static::getCountPerPage();
-        $countPerPage = 10;
-        $startRow = ($page * $countPerPage)-$countPerPage;
+        $countPerPage = static::getCountPerPage();
+        // $countPerPage = 10;
+        $startRow = ($pageNumber * $countPerPage)-$countPerPage;
         $db = Db::getInstance();
         $result = $db->query('SELECT * FROM `'.static::getTableName().'` LIMIT '.$startRow.','.$countPerPage.';', [], static::class);
         return $result;
@@ -179,8 +176,15 @@ private function insert(array $mappedProperties)
 
     public static function getPagesPaginator()
     {
-        // $countPerPage = static::getCountPerPage();
-        $countPerPage = 10;
+        $countPerPage = static::getCountPerPage();
+        $db = Db::getInstance();
+        $result = $db->query('SELECT COUNT(*) as count FROM `'.static::getTableName().'`;',[]);
+        return ceil((int)($result[0]->count) / $countPerPage);
+    }
+
+    public static function getLastPage()
+    {
+        $countPerPage = static::getCountPerPage();
         $db = Db::getInstance();
         $result = $db->query('SELECT COUNT(*) as count FROM `'.static::getTableName().'`;',[]);
         return ceil((int)($result[0]->count) / $countPerPage);
@@ -190,9 +194,23 @@ private function insert(array $mappedProperties)
     {
         $countPerPage = static::getCountPerPage();
         $db = Db::getInstance();
-        $result = $db->query('SELECT COUNT(*) as count FROM `'.static::getTableName().'` WHERE id<:id;',[':id'=>$id]);
-        return ceil((int)($result[0]->count) / $countPerPage);
-        // return $id;
+        $result = $db->query('SELECT COUNT(*) as count FROM `'.static::getTableName().'` WHERE id < :id;',[':id'=>$id]);
+        $row = (int)($result[0]->count)+1;
+        $p = (int)ceil($row / $countPerPage);
+        return $p;
+    }
+
+    public static function uniquenessColumnTest($fields, $columnName)
+    {   
+        $db = Db::getInstance();
+        if (empty($fields['id'])) {
+            $id = 0;
+        } else {
+            $id = $fields['id'];
+        }
+        $sql = 'SELECT * FROM '. static::getTableName() . ' WHERE `'.$columnName.'` = :value &&  `id` <> :id LIMIT 1;';
+        $result = $db->query($sql, [':value' => $fields[$columnName], ':id'=>$id], static::class);
+        return (empty($result));
     }
 
     abstract protected static function getTableName();

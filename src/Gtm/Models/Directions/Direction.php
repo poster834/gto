@@ -1,22 +1,20 @@
 <?php
-namespace Gtm\Models\Roles;
+namespace Gtm\Models\Directions;
 
 use Gtm\Models\ActiveRecordEntity;
 use Gtm\Exceptions\InvalidArgumentException;
 use Gtm\Services\Db;
 
-class Role extends ActiveRecordEntity
+class Direction extends ActiveRecordEntity
 {
 
     /** @var string*/
     protected $name;
-
-    /** @var string*/
-    protected $description;
+    
     
     protected static function getTableName()
     {
-        return 'roles';
+        return 'directions';
     }
     
     protected static function getCountPerPage()
@@ -29,9 +27,11 @@ class Role extends ActiveRecordEntity
         return $this->name;
     }
 
-    public function getDescription()
+    public function getRegionsCountInDirection()
     {
-        return $this->description;
+            $db = Db::getInstance();
+            $result = $db->query('SELECT COUNT(*) as count FROM `regions` WHERE direction=:id;',[':id' => $this->id]);
+            return $result[0]->count;
     }
 
     public function setName($newName)
@@ -39,27 +39,19 @@ class Role extends ActiveRecordEntity
         $this->name = $newName;
     }
 
-    public function setDescription($newDescription)
-    {
-        $this->description = $newDescription;
-    }
-
     public function updateFromArray(array $fields)
     {
-        $testUni = Role::uniquenessColumnTest($fields,'name');
+        $testUni = Direction::uniquenessColumnTest($fields,'name');
 
         if (empty($fields['name'])) {
             throw new InvalidArgumentException("Не указано поле: Имя");
         }
-        if (empty($fields['description'])) {
-            throw new InvalidArgumentException("Не указано поле: Описание");
-        }
+   
         if (!$testUni) {
             throw new InvalidArgumentException("Значение поля 'Имя:' не уникально");
         }
         
         $this->setName($fields['name']);
-        $this->setDescription($fields['description']);
         $this->save();
         return $this;
     }

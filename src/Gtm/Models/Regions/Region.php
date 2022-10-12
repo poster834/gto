@@ -1,22 +1,23 @@
 <?php
-namespace Gtm\Models\Roles;
+namespace Gtm\Models\Regions;
 
 use Gtm\Models\ActiveRecordEntity;
 use Gtm\Exceptions\InvalidArgumentException;
-use Gtm\Services\Db;
+use Gtm\Models\Directions\Direction;
 
-class Role extends ActiveRecordEntity
+class Region extends ActiveRecordEntity
 {
 
     /** @var string*/
     protected $name;
-
+    
     /** @var string*/
-    protected $description;
+    protected $direction;
+	
     
     protected static function getTableName()
     {
-        return 'roles';
+        return 'regions';
     }
     
     protected static function getCountPerPage()
@@ -29,9 +30,13 @@ class Role extends ActiveRecordEntity
         return $this->name;
     }
 
-    public function getDescription()
+    public function getDirectionId()
     {
-        return $this->description;
+        return $this->direction;
+    }
+    public function getDirectionName()
+    {
+        return Direction::getById($this->direction)->getName();
     }
 
     public function setName($newName)
@@ -39,27 +44,27 @@ class Role extends ActiveRecordEntity
         $this->name = $newName;
     }
 
-    public function setDescription($newDescription)
+    public function setDirection($newDirection)
     {
-        $this->description = $newDescription;
+        $this->direction = $newDirection;
     }
 
     public function updateFromArray(array $fields)
     {
-        $testUni = Role::uniquenessColumnTest($fields,'name');
+        $testUni = Region::uniquenessColumnTest($fields,'name');
 
         if (empty($fields['name'])) {
             throw new InvalidArgumentException("Не указано поле: Имя");
         }
-        if (empty($fields['description'])) {
-            throw new InvalidArgumentException("Не указано поле: Описание");
+        if (empty($fields['direction']) || $fields['direction'] == 'null') {
+            throw new InvalidArgumentException("Не указано поле: Направление");
         }
         if (!$testUni) {
             throw new InvalidArgumentException("Значение поля 'Имя:' не уникально");
         }
         
         $this->setName($fields['name']);
-        $this->setDescription($fields['description']);
+        $this->setDirection($fields['direction']);
         $this->save();
         return $this;
     }

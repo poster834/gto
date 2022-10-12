@@ -4,26 +4,31 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="src/templates/style.css">
-    <link rel="stylesheet" href="vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="/../../../../../../gtm/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="<?=__DIR__.'/../../../../../../gtm/src/templates/style.css'?>">
+    <link rel="stylesheet" href="<?=__DIR__.'/../../../../../../gtm/vendor/twbs/bootstrap/dist/css/bootstrap.min.css'?>">
+    <link rel="stylesheet" href="<?=__DIR__.'/../../../../../../gtm/vendor/font-awesome-4.7.0/css/font-awesome.min.css'?>">
 
-    <title>Система мониторинга транспорта <?= !empty($companyName) ? $companyName:'Наименование компании';?></title>
+    <title>Система мониторинга транспорта <?= !empty($company->getName()) ? $company->getName():'Наименование компании';?></title>
 </head>
+<?php
 
+?>
 <body>
+<div class="wrapper">
+    <div class="content">
+        
     <div class="container-fluid text-center">
         <div class="row topLine">
             <div class="col-2">
                 <div class="logo">
-                    <a href="/gtm"><img src="#" alt="logo"></a>   
+                    <a href="/gtm"><img class="logoImg" src="../gtm/src/templates/img/company/uploads/<?=$company->getLogo()?>" alt="logo"></a>   
                 </div>
             </div>
             <div class="col">
                 <div class="companyData">
                     <h2>Система мониторинга транспорта</h2>
-                    <h4><?= !empty($companyName) ? $companyName:'Наименование компании';?></h4>
+                    <h4><?= !empty($company->getName()) ? $company->getName():'Наименование компании';?></h4>
                 </div>
             </div>
             <div class="col-2 d-Flex">
@@ -33,7 +38,7 @@
                             <?=$user->getName();?>
                         </div>
                         <div id="logoutBtn">
-                            <form action="logout" method="post">
+                            <form action="<?=__DIR__.'/../../../../../../gtm/logout'?>" method="post">
                             <input type="submit" class="btn btn-danger" value="Выйти">
                             </form>
                         </div>
@@ -54,7 +59,7 @@
                         <h5 class="modal-title" id="enterModalLabel">Вход в систему</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="auth" method="post">
+                    <form action="<?=__DIR__.'/../../../../../../gtm/auth'?>" method="post">
                         <div class="modal-body">
                             <label for="email"><b>Логин:</b></label>
                             <input class="form-control" type="text" name="login" id="login" placeholder="Логин">

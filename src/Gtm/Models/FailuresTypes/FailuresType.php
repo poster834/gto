@@ -1,22 +1,20 @@
 <?php
-namespace Gtm\Models\Roles;
+namespace Gtm\Models\FailuresTypes;
 
 use Gtm\Models\ActiveRecordEntity;
 use Gtm\Exceptions\InvalidArgumentException;
 use Gtm\Services\Db;
 
-class Role extends ActiveRecordEntity
+class FailuresType extends ActiveRecordEntity
 {
 
     /** @var string*/
     protected $name;
-
-    /** @var string*/
-    protected $description;
+    
     
     protected static function getTableName()
     {
-        return 'roles';
+        return 'failuresType';
     }
     
     protected static function getCountPerPage()
@@ -29,37 +27,24 @@ class Role extends ActiveRecordEntity
         return $this->name;
     }
 
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
     public function setName($newName)
     {
         $this->name = $newName;
     }
 
-    public function setDescription($newDescription)
-    {
-        $this->description = $newDescription;
-    }
-
     public function updateFromArray(array $fields)
     {
-        $testUni = Role::uniquenessColumnTest($fields,'name');
+        $testUni = FailuresType::uniquenessColumnTest($fields,'name');
 
         if (empty($fields['name'])) {
             throw new InvalidArgumentException("Не указано поле: Имя");
         }
-        if (empty($fields['description'])) {
-            throw new InvalidArgumentException("Не указано поле: Описание");
-        }
+   
         if (!$testUni) {
             throw new InvalidArgumentException("Значение поля 'Имя:' не уникально");
         }
         
         $this->setName($fields['name']);
-        $this->setDescription($fields['description']);
         $this->save();
         return $this;
     }

@@ -1,6 +1,26 @@
-body{
-    background-color: antiquewhite;
-}
+* {
+    margin: 0;
+    padding: 0;
+  }
+  html,
+  body {
+    height: 100%;
+  }
+  .wrapper {
+    position: relative;
+    min-height: 100%;
+  }
+  .content {
+    padding-bottom: 90px;
+  }
+  .footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+  }
+
 
 .topLine{
     border-bottom: 5px solid rgb(112, 6, 6);
@@ -38,6 +58,7 @@ label{
 .adminMenu{
     text-align: left;
     list-style: none;
+    padding-left: 0px;
 }
 
 .adminMenu li{
@@ -58,6 +79,11 @@ label{
     color: inherit;
 }
 
+.subMenu
+{
+    display: none;
+}
+
 
 #loginName,
 #logoutBtn{
@@ -68,6 +94,7 @@ label{
 .tableBase td{
     padding: 3px 5px;
     border: 2px solid #aaa;
+    font-size: 12px;
 }
 
 .tableBase .topTr{
@@ -88,4 +115,13 @@ label{
 .pagePaginator:hover, .pagePaginator-active{
     background-color: #640707;
     color: #fff;
+}
+
+#result{
+    display: none;
+}
+
+.logoImg{
+    max-height: 80px;
+    width: auto;
 }

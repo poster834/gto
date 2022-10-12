@@ -1,1 +1,1 @@
-<p style="background-color:red;color:#fff;">Не заполнены обязательные поля</p>
+<p style="background-color:red;color:#fff;"><?=$error;?></p>
