@@ -23,16 +23,20 @@ $adminRoutes = [
         '~^admin/failuresTypes/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'failuresTypes'],
         '~^admin/offensesTypes/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'offensesTypes'],
         '~^admin/machines/$~' => [Gtm\Controllers\AdminController::class, 'machines'],
+        '~^admin/schema/$~' => [Gtm\Controllers\AdminController::class, 'schema'],
+        '~^admin/propertiesTypes/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'propertiesTypes'],
+        '~^company/deleteLogo$~' => [Gtm\Controllers\AdminController::class, 'deleteLogo'],
+        
 
-        '~^machines/block/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'block'],
+        // '~^machines/block/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'block'],
         // '~^machines/edit/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'edit'],
         // '~^machines/delete/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'delete'],
         // '~^machines/save$~' => [Gtm\Controllers\MachinesController::class, 'saveMachine'],
-        // '~^addMachine$~' => [Gtm\Controllers\MachinesController::class, 'showAdd'],
-        '~^admin/machines_groups/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'groupsUnion'],
-        '~^admin/machines_owners/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'ownersUnion'],
-        '~^admin/machines_gpsFailures/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'gpsFailuresUnion'],
-        '~^admin/machines_offenses/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'offensesUnion'],
+       
+        // '~^admin/machines_groups/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'groupsUnion'],
+        // '~^admin/machines_owners/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'ownersUnion'],
+        // '~^admin/machines_gpsFailures/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'gpsFailuresUnion'],
+        // '~^admin/machines_offenses/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'offensesUnion'],
 
         '~^offensesTypes/editRow/(\d+)$~' => [Gtm\Controllers\OffensesTypesController::class, 'editRow'],
         '~^offensesTypes/edit/(\d+)$~' => [Gtm\Controllers\OffensesTypesController::class, 'edit'],
@@ -51,6 +55,13 @@ $adminRoutes = [
         '~^directions/delete/(\d+)$~' => [Gtm\Controllers\DirectionsController::class, 'delete'],
         '~^directions/save$~' => [Gtm\Controllers\DirectionsController::class, 'saveDirection'],
         '~^addDirection$~' => [Gtm\Controllers\DirectionsController::class, 'showAdd'],
+
+        '~^propertiesTypes/editRow/(\d+)$~' => [Gtm\Controllers\PropertiesTypesController::class, 'editRow'],
+        '~^propertiesTypes/edit/(\d+)$~' => [Gtm\Controllers\PropertiesTypesController::class, 'edit'],
+        '~^propertiesTypes/delete/(\d+)$~' => [Gtm\Controllers\PropertiesTypesController::class, 'delete'],
+        '~^propertiesTypes/save$~' => [Gtm\Controllers\PropertiesTypesController::class, 'savePropertiesTypes'],
+        '~^addPropertiesTypes/(\d+)$~' => [Gtm\Controllers\PropertiesTypesController::class, 'showAdd'],
+        '~^addPropertiesTypes/setUnuse/(\d+)$~' => [Gtm\Controllers\PropertiesTypesController::class, 'setUnuse'],
         
         '~^roles/editRow/(\d+)$~' => [Gtm\Controllers\RolesController::class, 'editRow'],
         '~^roles/edit/(\d+)$~' => [Gtm\Controllers\RolesController::class, 'edit'],
@@ -73,8 +84,12 @@ $adminRoutes = [
         '~^addUser$~' => [Gtm\Controllers\UsersController::class, 'showAdd'],
         '~^company/save$~' => [Gtm\Controllers\AdminController::class, 'saveCompany'],
         '~^logo/load$~' => [Gtm\Controllers\AdminController::class, 'logoLoad'],
-        '~^schema/check$~' => [Gtm\Controllers\AdminController::class, 'schemaCheck'],
-        // '~^schema/load$~' => [Gtm\Controllers\AdminController::class, 'schemaLoad'],
+        '~^schema/check/(file|web|web_geo)$~' => [Gtm\Controllers\SchemasController::class, 'schemaCheck'],
+        '~^schema/load$~' => [Gtm\Controllers\SchemasController::class, 'schemaLoad'],
+        '~^geo_schema/load$~' => [Gtm\Controllers\SchemasController::class, 'geoSchemaLoad'],
+        '~^schema/updateTableFromFile$~' => [Gtm\Controllers\SchemasController::class, 'updateTableFromFile'],
+        '~^geo_schema/updateTableFromFile$~' => [Gtm\Controllers\SchemasController::class, 'updateFencesTableFromFile'],
+
 
 ];
 $adminRoutes = array_merge($adminRoutes, $userRoutes);

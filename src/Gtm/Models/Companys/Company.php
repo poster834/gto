@@ -21,6 +21,9 @@ class Company extends ActiveRecordEntity
         /** @var string*/
         protected $rootGuid;
 
+        /** @var string*/
+        protected $dateUpdate;
+
     protected static function getTableName()
     {
         return 'company';
@@ -55,18 +58,31 @@ class Company extends ActiveRecordEntity
         return $this->rootGuid;
     }
 
+    public function getDateUpdate()
+    {
+        return $this->dateUpdate;
+    }
+
+    public function setDateUpdate($newDateUpdate)
+    {
+        $this->dateUpdate = $newDateUpdate;
+    }
+
     public function setName($newName)
     {
         $this->name = $newName;
     }
+
     public function setPhone($newPhone)
     {
         $this->phone = $newPhone;
     }
+
     public function setEmail($newEmail)
     {
         $this->email = $newEmail;
     }
+
     public function setLogo($newLogo)
     {
         $this->logo = $newLogo;
@@ -79,7 +95,6 @@ class Company extends ActiveRecordEntity
 
     public function updateFromArray(array $fields)
     {
-        // var_dump($fields);
         $this->setName($fields['name']);
         $this->setEmail($fields['email']);
         $this->setPhone($fields['phone']);

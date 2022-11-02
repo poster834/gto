@@ -6,6 +6,8 @@
     <li id="regions" onclick="showBlock(this.id,1)">Районы            </li>
     <li id="failuresTypes" onclick="showBlock(this.id,1)">Типы поломок            </li>
     <li id="offensesTypes" onclick="showBlock(this.id,1)">Типы нарушений            </li>
+    <li id="schema" onclick="showBlock(this.id)">Схема           </li>
+    <li id="propertiesTypes" onclick="showBlock(this.id,1)">Параметры машин          </li>
     <li id="machines" onclick="showBlock(this.id)">Машины           </li>
         <!-- <ul class='subMenu' id='machines_subMenu'>
             <li id="machines_groups" onclick="showSubBlock(this.id,1)">По группам</li>

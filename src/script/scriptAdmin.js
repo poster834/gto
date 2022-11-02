@@ -2,7 +2,7 @@ function showBlock(type,pageNumber)
 {
     if ((pageNumber == undefined)) {
         pageNumber = "";
-    } else {}
+    } else {    }
     $.ajax({  
         method: "POST",  
         url: "admin/"+type+"/"+pageNumber,
@@ -10,27 +10,9 @@ function showBlock(type,pageNumber)
             $('.subMenu').hide();
             $('.adminMenu li').removeClass('activePoint');
             $('#'+type).addClass('activePoint');
-            showSubBlock(type,pageNumber);
             $('#block').html(html);
             $('.pagePaginator').removeClass('pagePaginator-active');
             $('#pagePaginator'+pageNumber).addClass('pagePaginator-active');
-        }                   
-    });
-}
-
-function showSubBlock(type,pageNumber)
-{
-    $.ajax({  
-        method: "POST",  
-        url: "admin/"+type+"/"+pageNumber,
-        success: function(html){
-            $('.adminMenu li').removeClass('activePoint');
-            $('#block').html(html);
-            parentType = type.split('_')[0];
-            $('#'+type+'_subMenu').show();
-            $('#'+parentType+'_subMenu').show();
-            $('#'+type).addClass('activePoint');
-            $('#'+parentType).addClass('activePoint');
         }                   
     });
 }
@@ -96,6 +78,19 @@ function showFormAddRow(type)
     });
 }
 
+function showFormAddRowProp(type,id)
+{
+    $.ajax({  
+        method: "POST",  
+        url: type+'/'+id,
+        success: function(htmlData) {
+            $('#result').html(htmlData);
+            $('#result').show();
+            $('#errors').html('');
+        }                   
+    });
+}
+
 function cancelForm()
 {
     $('#result').hide();
@@ -125,8 +120,6 @@ function saveCompany()
         url: 'company/save',
       success: function(htmlData) {
         location.reload(); return false;
-        // $('#errors').html(htmlData);
-        
         }      
     });
 
@@ -193,14 +186,110 @@ function selectLogo()
 	});
 }
 
-function checkSchemaFile()
+function checkSchemaFile(type)
 {
+    $('#result').html('');
+    if(type == 'web' || type == 'web_geo')
+    {
+        $('#schemaFileSaveForm')[0].reset();
+        $('#result').show();
+        $('#result').html('<i class="fa fa-spinner fa-2x fa-spin" aria-hidden="true"></i> - Загрузка с сервера <b>online.tkglonass.ru</b>');
+    }
     $('#schemaFileSaveForm').ajaxSubmit({
 		type: 'POST',
-		url: 'schema/check',
+		url: 'schema/check/'+type,
 		success: function(htmlData) {
             $('#result').html(htmlData);
             $('#result').show();
 		}
 	});
+}
+
+function schemaLoad()
+{
+        $('#schemaFileSaveForm').ajaxSubmit({
+            type: 'POST',
+            url: 'schema/load',
+            success: function(htmlData) {
+                $('#result').html(htmlData);
+                $('#schemaFileSaveForm')[0].reset();
+            }
+        });   
+}
+
+function geo_schemaLoad()
+{
+        $('#schemaFileSaveForm').ajaxSubmit({
+            type: 'POST',
+            url: 'geo_schema/load',
+            success: function(htmlData) {
+                $('#result').html(htmlData);
+                $('#schemaFileSaveForm')[0].reset();
+            }
+        });   
+}
+
+
+function schemaSave()
+{
+    $('#result').html('<i class="fa fa-spinner fa-2x fa-spin" aria-hidden="true"></i> - Обновление базы данных');
+    $.ajax({  
+        method: "POST",  
+        url:"schema/updateTableFromFile",
+        success: function(htmlData) {
+            $('#result').html(htmlData);
+            if (htmlData.length < 70) {
+                setTimeout(() => {  showBlock('schema'); }, 5000);    
+            }
+        }                   
+    });
+}
+
+function geoSchemaSave()
+{
+    $('#result').html('<i class="fa fa-spinner fa-2x fa-spin" aria-hidden="true"></i> - Обновление базы данных геозон');
+    $.ajax({  
+        method: "POST",  
+        url:"geo_schema/updateTableFromFile",
+        success: function(htmlData) {
+            $('#result').html(htmlData);
+            if (htmlData.length < 70) {
+                setTimeout(() => {  showBlock('schema'); }, 5000);    
+            }
+        }                   
+    });
+}
+
+
+
+function cancelSchema()
+{
+    showBlock('schema');
+}
+
+function deleteLogo()
+{
+    $.ajax({  
+        method: "POST",  
+        url:"company/deleteLogo",
+        success: function() {
+            showBlock('company');
+        }                   
+    });
+}
+
+function setUnUse(id)
+{
+    $.ajax({  
+        method: "POST",  
+        url:"addPropertiesTypes/setUnuse/"+id,
+        success: function(htmlData) {
+            pageNumber = htmlData / 1;
+            if (isNaN(pageNumber)) {
+                $('#errors').html('<span>'+htmlData+'</span>');
+            } else {
+                showBlock('propertiesTypes',pageNumber);
+            }
+        }
+    });
 }

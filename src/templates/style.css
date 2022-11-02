@@ -105,6 +105,11 @@ label{
     width: 100%;
 }
 
+.notEditInput{
+    width: 100%;
+    background-color: #ccc;
+}
+
 .pagePaginator{
     cursor: pointer;
     background-color: #aaa;

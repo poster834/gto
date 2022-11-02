@@ -213,6 +213,20 @@ private function insert(array $mappedProperties)
         return (empty($result));
     }
 
+    public static function truncateTable()
+    {
+        $db = Db::getInstance();
+        $sql = 'TRUNCATE TABLE '. static::getTableName() . ';';
+        $result = $db->query($sql);
+        return $result;
+    }
+    public static function getCountInTable()
+    {
+        $db = Db::getInstance();
+        $result = $db->query('SELECT COUNT(*) as count FROM `'.static::getTableName().'` WHERE 1;',[]);
+        return $result[0]->count;
+    }
+
     abstract protected static function getTableName();
     abstract protected static function getCountPerPage();
 

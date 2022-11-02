@@ -9,6 +9,10 @@ use Gtm\Models\Directions\Direction;
 use Gtm\Models\FailuresTypes\FailuresType;
 use Gtm\Models\OffensesTypes\OffensesType;
 use Gtm\Models\Machines\Machine;
+use Gtm\Models\Groups\Group;
+use Gtm\Models\Properties\Properties;
+use Gtm\Models\PropertiesTypes\PropertiesType;
+use Gtm\Models\Devices\Device;
 
  ini_set('display_errors',1);
  error_reporting(E_ALL);
@@ -59,6 +63,26 @@ class AdminController extends AbstractController
         ]);
     }
 
+    public function propertiesTypes($pageNumber)
+    {
+        $propertiesTypes = PropertiesType::findAllPerPage($pageNumber);
+        $properties = new Properties();
+        $propertiesArr = [
+            0=>['name'=>'DeviceIMEI', 'count'=>352, 'use'=>false],
+            1=>['name'=>'DeviceSIM', 'count'=>350, 'use'=>true],
+        ];
+        $parametersArray = [
+            0=>['name'=>'ID', 'use'=>false],
+        ];
+        $pages = PropertiesType::getPagesPaginator();
+        $this->view->renderHtml('admin/blocks/propertiesTypes.php',[
+            'propertiesTypes'=>$propertiesTypes,
+            'propertiesArray'=>$propertiesArr,
+            'parametersArray'=>$parametersArray,
+            'pages'=>$pages,
+        ]);
+    }
+
     public function regions($pageNumber)
     {
         $regions = Region::findAllPerPage($pageNumber);
@@ -92,11 +116,35 @@ class AdminController extends AbstractController
     public function machines()
     {
         $groupsCount = $machinesCount = 0;
-        $machinesCount = count(Machine::findAll());
+        $machinesCount = Machine::getCountInTable();
+        $groupsCount = Group::getCountInTable();
         $this->view->renderHtml('admin/blocks/machines.php',[
             'groupsCount' => $groupsCount,
             'machinesCount' => $machinesCount,
         ]);
+    }
+
+    public function schema()
+    {
+        $groupsCount = Group::getCountInTable();
+        $groupsTree = Group::getGroupsTree();
+        $machinesCount = Machine::getCountInTable();
+        $dateTime = new \DateTime(Company::getById(1)->getDateUpdate());
+        $devicesCount = Device::getCountInTable();
+        $this->view->renderHtml('admin/blocks/schema.php',[
+            'groupsCount' =>$groupsCount,
+            'machinesCount'=>$machinesCount,
+            'devicesCount'=>$devicesCount,
+            'dateTime'=>$dateTime,
+            'groupsTree'=>$groupsTree,
+        ]);
+    }
+
+    public function deleteLogo()
+    {
+        $company = Company::getById(1);
+        $company->setLogo('');
+        $company->save();
     }
     
     public function saveCompany()
@@ -170,92 +218,7 @@ class AdminController extends AbstractController
         }
     }
 
-    public function schemaCheck()
-    {
-        $file = @$_FILES['schemaFile'];
-        $error = '';
-         
-        // Разрешенные расширения файлов.
-        $allow = array('json');
-         
-        // Директория, куда будут загружаться файлы.
-        $path = $_SERVER["DOCUMENT_ROOT"].'/gtm/src/data/';
 
-        if (!empty($file)) {
-            // Проверим на ошибки загрузки.
-            if (!empty($file['error']) || empty($file['tmp_name'])) {
-                switch (@$file['error']) {
-                    case 1:
-                    case 2: $error = 'Превышен размер загружаемого файла.'; break;
-                    case 3: $error = 'Файл был получен только частично.'; break;
-                    case 4: $error = 'Файл не был загружен.'; break;
-                    case 6: $error = 'Файл не загружен - отсутствует временная директория.'; break;
-                    case 7: $error = 'Не удалось записать файл на диск.'; break;
-                    case 8: $error = 'PHP-расширение остановило загрузку файла.'; break;
-                    case 9: $error = 'Файл не был загружен - директория не существует.'; break;
-                    case 10: $error = 'Превышен максимально допустимый размер файла.'; break;
-                    case 11: $error = 'Данный тип файла запрещен.'; break;
-                    case 12: $error = 'Ошибка при копировании файла.'; break;
-                    default: $error = 'Файл не был загружен - неизвестная ошибка.'; break;
-                }
-            } elseif ($file['tmp_name'] == 'none' || !is_uploaded_file($file['tmp_name'])) {
-                $error = 'Не удалось загрузить файл.';
-            } else {
-                // Оставляем в имени файла только буквы, цифры и некоторые символы.
-                $pattern = "[^a-zа-яё0-9,~!@#%^-_\$\?\(\)\{\}\[\]\.]";
-                $name = mb_eregi_replace($pattern, '-', $file['name']);
-                $name = mb_ereg_replace('[-]+', '-', $name);
-                $parts = pathinfo($name);
 
-                if (empty($name) || empty($parts['extension'])) {
-                    $error = 'Не удалось загрузить файл.';
-                } elseif (!empty($allow) && !in_array(strtolower($parts['extension']), $allow)) {
-                    $error = 'Недопустимый тип файла';
-                } else {
-                    $name = 'schema.json';
-                    $path = $path.$name;
-                   
-                }
-            }
-             $this->schemaLoad($error, $file['tmp_name'], $path);
-        }
-    }
-
-    private function schemaLoad($error, $file, $path)
-    {
-        if ($error != '') {
-            echo '<span style="background-color:red;color:#fff;">' . $error . '</span>';
-        } else {
-            $jsonFile = file_get_contents($file, true);
-            $obj = json_decode($jsonFile, true);
-            if ($obj == null) {
-                $jsonFile = substr($jsonFile, 3);
-                $obj = json_decode($jsonFile, true);
-            }
-            $groups = $items = 0;
-            if (isset($obj['Groups'])) {
-                $groups = count($obj['Groups']);
-            }
-            if (isset($obj['Items'])) {
-                $items = count($obj['Items']);
-            }                     
-            echo '<hr>Всего Групп в предложенной схеме: <b>'.$groups."</b><br>";
-            echo 'Всего Машин в предложенной схеме:  <b>'.$items." </b><hr>";
-            if (($items>$groups) && ($groups>0)) {
-                echo '<span class="btn btn-primary">Загрузить схему</span>';    
-            } else {
-                echo '<span style="background-color:red;color:#fff;" onclick="schemaLoad()">Выберете другой файл</span>';
-            }
-            
-
-            // Перемещаем файл в директорию.
-            // if (move_uploaded_file($file, $path)) {
-            //     // Далее можно сохранить название файла в БД и т.п.
-            //   echo 'Файл успешно загружен.';
-            // } else {
-            //     $error = 'Не удалось загрузить файл.';
-            //     echo '<span style="background-color:red;color:#fff;">' . $error . '</span>';
-            // }
-        }
-    }
+   
 }
