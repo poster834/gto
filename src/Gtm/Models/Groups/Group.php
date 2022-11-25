@@ -4,6 +4,7 @@ namespace Gtm\Models\Groups;
 use Gtm\Models\ActiveRecordEntity;
 use Gtm\Services\Db;
 use Gtm\Models\Companys\Company;
+use Gtm\Models\Machines\Machine;
 
 class Group extends ActiveRecordEntity
 {
@@ -15,6 +16,10 @@ class Group extends ActiveRecordEntity
 
         /** @var string*/
         protected $parentGuid;
+
+        /** @var int*/
+        protected $isBlocked;
+        
 
     public static function getTableName()
     {
@@ -41,11 +46,21 @@ class Group extends ActiveRecordEntity
         $this->parentGuid = $newParentGuid;
     }
     
+    public function setBlocked($block)
+    {
+        $this->isBlocked = $block;
+    }
 
     public function getName()
     {
+        return $this->isBlocked;
+    }
+
+    public function getIsBlocked()
+    {
         return $this->name;
     }
+
     public function getSelfGuid()
     {
         return $this->selfGuid;
@@ -62,7 +77,18 @@ class Group extends ActiveRecordEntity
         return $result[0];
     }
 
-    public static function saveToBase($groupsArray)
+    public static function checkBlockedGroup()
+    {
+        $db = Db::getInstance();
+        $result = $db->queryAssoc('SELECT * FROM `groups` WHERE is_blocked = 1;', []);
+        $arr = [];
+        foreach($result as $gr){
+            $arr[] = $gr['self_guid'];
+        }
+        return $arr;
+    }
+
+    public static function saveToBase($groupsArray,$blockedArr)
     {
         foreach($groupsArray as $groupArr)
         {
@@ -70,56 +96,15 @@ class Group extends ActiveRecordEntity
             $group->setName($groupArr['Name']);
             $group->setSelfGuid($groupArr['ID']);
             $group->setParentGuid($groupArr['ParentID']);
+            $group->setBlocked(in_array($groupArr['ID'], $blockedArr));
             $group->save();
         }
+        // self::checkBlockedGroup();
     }
 
-    public static function getGroupsTree()
-    {
-        $groupTREE = [];
-        $depth = 0;
-        $db = Db::getInstance();  
-        $rootGuid = Company::getById(1)->getRootGuid();
-        $allGroupArr = $db->queryAssoc('SELECT * FROM `'.static::getTableName().'`;', []);
 
-        for ($i=0; $i < count($allGroupArr); $i++) { 
-            $thisGroupArr = $db->queryAssoc('SELECT * FROM `'.static::getTableName().'` WHERE parent_guid = :parent_guid ;', [':parent_guid' => $allGroupArr[$i]['self_guid']]);
-            if ($depth < count($thisGroupArr)) {
-                $depth = count($thisGroupArr);
-            }
-        }
-   
-        $groupsTree[$rootGuid]['Groups'] = null;
-        $groupsTree[$rootGuid]['Machines'] = null;
-        $resultArr = $db->queryAssoc('SELECT * FROM `'.static::getTableName().'` WHERE parent_guid = :parent_guid ;', [':parent_guid' => $rootGuid]);
-        $rootGroupName = Company::getById(1)->getName() != ''?Company::getById(1)->getName():'Наименование компании';
-        $groupMenu = "<span class='groupMenuL_0' id='groupLevel_0_$rootGuid'>".$rootGroupName;
-        $level_1 = '';
-        foreach($resultArr as $group)
-        {
-            $groupsTree[$rootGuid]['Groups'][$group['self_guid']]['Groups'] = null;
-            $groupsTree[$rootGuid]['Groups'][$group['self_guid']]['Machines'] = null;
-            $level_1 .= "<span class='groupMenuL_1' id='groupLevel_1_".$group['self_guid']."'>".Group::findOneByColumn('self_guid', $group['self_guid'])->getName().'</span>';
 
-        }        
-        
-        $groupMenu .= $level_1;
-        foreach($groupsTree[$rootGuid]['Groups'] as $grK => $grV)
-        {
-            $groupsTree[$rootGuid]['Groups'][$grK] = Group::getInnerGroup($grK);
-        }
-
-        foreach ($groupsTree as $groupId){
-            if ($groupId != null) {
-                
-            }
-        }
-        $groupMenu .= "</span>";
-        return $groupMenu;
-        // return $groupsTree;
-    }
-
-    private static function getInnerGroup($guid)
+    public static function getInnerGroup($guid)
     {
         $array = null;
         $db = Db::getInstance();
@@ -128,15 +113,47 @@ class Group extends ActiveRecordEntity
         {
             foreach($innerGroups as $iG)
             {
-                $array['Groups'][$iG['self_guid']] = self::getInnerGroup($iG['self_guid']);
-                $array['Machines'] = null;
+                $array[$iG['self_guid']]['name'] = $iG['name'];
+                $array[$iG['self_guid']]['is_blocked'] = $iG['is_blocked'];
+                $array[$iG['self_guid']]['self_guid'] = $iG['self_guid'];
+                $array[$iG['self_guid']]['parent_guid'] = $iG['parent_guid'];
+                $array[$iG['self_guid']]['Groups'] = Group::getInnerGroup($iG['self_guid']);    
+                $array[$iG['self_guid']]['Machines'] = Machine::getInnerMachines($iG['self_guid']);
             }
-        } else {
-            $array['Groups'] = null;
-            $array['Machines'] = null;
+        }
+        if(count($array) > 0)
+        {
+            return $array;
         }
 
-        return $array;
+        return [];
     }
 
+    public static function setBlockStatus($selfId, $st)
+    {
+        // добавить / удалить в таблице groupsBlock заблокированную группу
+        
+        // $db = Db::getInstance();
+        // $result = $db->query('SELECT * FROM `groupsBlock` WHERE self_guid = :selfGuid ;', [':selfGuid' => $selfId], static::class);
+        // if(count($result[0])>0)
+        // {
+        //     $result = $db->query('UPDATE `groupsBlock` SET WHERE self_guid = :selfGuid;', [':selfGuid' => $selfId], static::class);
+        // }
+        $group = self::getBySelfId($selfId);
+        $group->setBlocked((int)$st);
+        $group->save();
+    }
+    // public static function saveBlockGroup()
+    // {
+    //     $db = Db::getInstance();
+    //     $result = $db->queryAssoc('SELECT * FROM `groups` WHERE is_blocked = 1;', []);
+    //     $sql = 'TRUNCATE TABLE groupsBlock;';
+    //     $resultTrancate = $db->query($sql);
+
+    //     foreach($result as $blockGroup)
+    //     {
+    //         $sql .= 'INSERT INTO groupsBlock ("self_guid") VALUES ('.$blockGroup["self_guid"].')';
+    //     }
+    //     $db->query($sql);
+    // }
 }

@@ -124,11 +124,11 @@ class SchemasController extends AbstractController
                 } 
             }
         } else if ($src == 'web'){
-            $data = file_get_contents('https://online.tkglonass.ru/ServiceJSON/EnumDevices?session=5EB5C3D01E7889A10EB2C3459619103262B16A8D8B7DC0B18E7958B3620A6C1F&schemaID=31177dec-ea50-4f56-a1f1-5550b56f8eed', true);
+            $data = file_get_contents('https://online.tkglonass.ru/ServiceJSON/EnumDevices?session=323BCAA0101C6321519B278B6EC1174C4BBCBD06A2A10BDE04C139134F4EEB01&schemaID=31177dec-ea50-4f56-a1f1-5550b56f8eed', true);
             file_put_contents(__DIR__.'/../../data/schema_tmp.json', $data);
             $obj = json_decode($data, true);
         } else if ($src == 'web_geo'){
-            $data_geo = file_get_contents('https://online.tkglonass.ru/ServiceJSON/EnumGeoFences?session=5EB5C3D01E7889A10EB2C3459619103262B16A8D8B7DC0B18E7958B3620A6C1F&schemaID=31177dec-ea50-4f56-a1f1-5550b56f8eed', true);
+            $data_geo = file_get_contents('https://online.tkglonass.ru/ServiceJSON/EnumGeoFences?session=323BCAA0101C6321519B278B6EC1174C4BBCBD06A2A10BDE04C139134F4EEB01&schemaID=31177dec-ea50-4f56-a1f1-5550b56f8eed', true);
             file_put_contents(__DIR__.'/../../data/geo_schema_tmp.json', $data_geo);
             $obj_geo = json_decode($data_geo, true);
         }
@@ -178,6 +178,7 @@ class SchemasController extends AbstractController
         Fence::saveToBase($fences);
     }
 
+
     private function saveSchemaToBase()
     {
         $fileJSON = file_get_contents(__DIR__.'/../../data/schema.json', true);
@@ -188,7 +189,7 @@ class SchemasController extends AbstractController
         $machinesPropertiesArray = [];
         $machinesArray = [];
         $devicesArray = [];
-        $basePropertiesArray = ['glonass_serial', 'guid', 'name','image', 'image_colored'];
+        $basePropertiesArray = ['glonass_serial', 'image', 'image_colored'];
         $company =  Company::getById(1);
         $rootGuid = '';
 
@@ -226,14 +227,13 @@ class SchemasController extends AbstractController
                     $serial = $machine['Serial'];
                 }
                 $machinesPropertiesArray[$machine['ID']][$basePropertiesArray[0]] = $serial;
-                $machinesPropertiesArray[$machine['ID']][$basePropertiesArray[1]] = $machine['ParentID'];
-                $machinesPropertiesArray[$machine['ID']][$basePropertiesArray[2]] = $machine['Name'];
-                $machinesPropertiesArray[$machine['ID']][$basePropertiesArray[3]] = $machine['Image'];
-                $machinesPropertiesArray[$machine['ID']][$basePropertiesArray[4]] = $machine['ImageColored'];                
+                $machinesPropertiesArray[$machine['ID']][$basePropertiesArray[1]] = $machine['Image'];
+                $machinesPropertiesArray[$machine['ID']][$basePropertiesArray[2]] = $machine['ImageColored'];                             
                 
                 //формируем массив для добавления машин в базу
                 $machinesArray[$machine['ID']]['uid'] = $machine['ID'];
                 $machinesArray[$machine['ID']]['guid'] = $machine['ParentID'];
+                $machinesArray[$machine['ID']]['name'] = $machine['Name'];
 
                 //формируем массив для добавления устройств в базу. Только реальные приборы
                 if ((int)$machine['Serial']>11115) {
@@ -264,8 +264,9 @@ class SchemasController extends AbstractController
             echo '<span style="background-color:red;color:#fff;">Невозможно определить корневую группу. Обратитесь к владельцу загруженной схемы.</span><br> <span class="btn btn-danger" onclick="cancelSchema()">Отмена</span>';
         } else {
              //записываем группы машин в базу
+            $blockedGroups =  Group::checkBlockedGroup();
             Group::truncateTable();
-            Group::saveToBase($groupsArray);
+            Group::saveToBase($groupsArray, $blockedGroups);
         }
 
         //записываем все машины в базу

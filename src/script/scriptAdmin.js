@@ -131,7 +131,7 @@ function changePassword(userId)
         type: 'POST',
         url: "users/changePassword/"+userId,
       success: function(htmlData) {
-        console.log(htmlData);
+        // console.log(htmlData);
         pageNumber = htmlData / 1;
         if (isNaN(pageNumber)) {
             $('#errors').html('<span>'+htmlData+'</span>');
@@ -292,4 +292,225 @@ function setUnUse(id)
             }
         }
     });
+}
+
+function showGroup(elemId,thisElem)
+{
+    let open = ($([thisElem]).hasClass('open'));
+    if (!open) {
+        expandGroup(elemId,thisElem);
+    } else if (open) {
+        collapsGroup(elemId,thisElem);
+    } 
+}
+
+function expandGroup(elemId,thisElem)
+{
+    $([thisElem]).addClass('open');
+    $('[id=pm_'+elemId.substr(2)+']').html('<i class="fa fa-minus" aria-hidden="true"></i>');
+    let elems = $('[parentguid='+elemId+']');
+    elems.each(function(i, elem){
+        $([elem]).addClass('visible');
+        $([elem]).removeClass('noVisible');
+        
+    });
+}
+
+function collapsGroup(elemId,thisElem)
+{
+    $([thisElem]).removeClass('open');
+    $('[id=pm_'+elemId.substr(2)+']').html('<i class="fa fa-plus-square" aria-hidden="true"></i>');
+
+    let elems = $('[parentguid='+elemId+']');
+
+    elems.each(function(i, elem){
+        $([elem]).removeClass('visible');
+        $([elem]).addClass('noVisible');
+        if ($([elem]).hasClass('menu_G_L')) {
+            collapsGroup($([elem]).attr('id'), $([elem]));
+            $([elem]).removeClass('open');
+        }
+    });
+    $.each($(".menuMachine"), function() {
+        $(this).removeClass('menuMachineActive');
+    });
+}
+
+function clearSearch()
+{
+    $('#search').val('');
+    root = document.querySelectorAll('#menu > span:first-child');
+    rootId = document.querySelectorAll('#menu > span:first-child')[0].id;
+    $('#'+rootId).removeClass('open');
+    collapsGroup(rootId, root);
+    $.each($(".menuMachine"), function() {
+        $(this).addClass('noVisible');
+        $(this).removeClass('visible');
+    });
+}
+
+
+function showMachine(this_id,_this)
+{
+    $.each($(".menuMachine"), function() {
+        $(this).removeClass('menuMachineActive');
+    });
+    $('#'+this_id).addClass('menuMachineActive');
+}
+
+
+function changeActiveClass(this_id)
+{
+    let _this = document.getElementById(this_id); //вызываемый элемент
+
+    if($([_this]).hasClass('activeForUser')){
+        changeActivatorGroup(this_id,'deactivate');
+
+    } else if($([_this]).hasClass('notActiveForUser')){
+        changeActivatorGroup(this_id,'activate');
+    }
+
+}
+
+
+function changeActivatorGroup(thisId, setStatus)
+{
+    parentsId = getParentsId(thisId);
+    childrensId = getAllChildrens([thisId]);
+
+    if (setStatus == 'activate') {
+        $('#'+thisId).addClass('activeForUser');
+        $('#'+thisId).removeClass('notActiveForUser');
+        childrensId.forEach(element =>{
+            $('#'+element).addClass('activeForUser');
+            $('#'+element).removeClass('notActiveForUser');
+        });
+        parentsId.forEach(element => {
+                $('#'+element).addClass('activeForUser');
+                $('#'+element).removeClass('notActiveForUser');
+
+        });
+    } else if(setStatus == 'deactivate'){    
+        $('#'+thisId).addClass('notActiveForUser');
+        $('#'+thisId).removeClass('activeForUser');
+        childrensId.forEach(element =>{
+            $('#'+element).addClass('notActiveForUser');
+            $('#'+element).removeClass('activeForUser');
+        });
+    }
+
+    parentsId.forEach(element => {
+        allActiveChildrenArr = getActiveChildren(element);
+        allDeactiveChildrenArr = getDeactiveChildren(element);
+        allChildrenArr = getChildren(element);
+        if (allChildrenArr.length == allDeactiveChildrenArr.length) {
+            $('#'+element).addClass('notActiveForUser');
+            $('#'+element).removeClass('activeForUser');
+        }
+    });
+
+}
+
+function getActiveChildren(thisId)
+{
+    let activeChildren = document.querySelectorAll("[parentguid = "+thisId+"][class ~= 'activeForUser']");
+    ch=[];
+    activeChildren.forEach(element => {
+        ch.push(element.id);
+    });
+    return ch;
+}
+
+function getDeactiveChildren(thisId)
+{
+    let notActiveChildren = document.querySelectorAll("[parentguid = "+thisId+"][class ~= 'notActiveForUser']");
+    ch=[];
+    notActiveChildren.forEach(element => {
+        ch.push(element.id);
+    });
+    return ch;
+}
+
+function getChildren(thisId)
+{
+    let allChildren = document.querySelectorAll("[parentguid = "+thisId+"]");
+    ch=[];
+    allChildren.forEach(element => {
+        ch.push(element.id);
+    });
+    return ch;
+}
+
+
+function changeActivatorGroupParents(thisId, setStatus)
+{
+    if (setStatus == 'activate') {
+        $('#'+thisId).addClass('activeForUser');
+        $('#'+thisId).removeClass('notActiveForUser');
+        // childrensId.forEach(element =>{
+        //     $('#'+element).addClass('activeForUser');
+        //     $('#'+element).removeClass('notActiveForUser');
+        // });
+    } else if(setStatus == 'deactivate'){    
+        $('#'+thisId).addClass('notActiveForUser');
+        $('#'+thisId).removeClass('activeForUser');
+        // childrensId.forEach(element =>{
+        //     $('#'+element).addClass('notActiveForUser');
+        //     $('#'+element).removeClass('activeForUser');
+        // });
+    }
+}
+
+
+function blockGroup(this_id,_this) {
+
+    self_id = this_id.substr(2);
+    if ($([_this]).hasClass('notActiveForUser')) {
+        actStatus = '1';
+    } 
+    if ($([_this]).hasClass('activeForUser')) {
+        actStatus = '0';
+    } 
+    $.ajax({  
+        method: "POST",  
+        url:"activateGroup/"+actStatus+"/"+self_id,
+        success: function(htmlData) {
+            // console.log(htmlData);
+        }
+    });
+}
+
+function getParentsId(id, arrayParentsId=[])
+{
+    arrayParentsId.push($('#'+id).attr('parentguid'))
+    for (let l = $('#'+id).attr('level'); l > 1; l--) {
+        id = $('#'+id).attr('parentguid');
+        arrayParentsId.push($('#'+id).attr('parentguid'));
+    }
+    let l = arrayParentsId.length;
+    arrayParentsId = arrayParentsId.filter((n) => {return n != arrayParentsId[l-1]});
+
+    return arrayParentsId;
+}
+
+function getAllChildrens(chArr, arrayChildren)
+{       
+    
+    if (typeof arrayChildren === 'undefined') {
+        arrayChildren = [];
+    }
+    let allCh = [];
+    chArr.forEach(elem => {
+        ch = [];
+        let arrayChildrens = document.querySelectorAll("[parentguid = "+elem+"]");
+                arrayChildrens.forEach(element => {
+                    ch.push(element.id);
+                });
+                allCh.push(...ch);
+    });
+    if (allCh.length > 0) {
+        arrayChildren.push(...allCh);
+        getAllChildrens(allCh, arrayChildren);
+    }
+    return arrayChildren;
 }

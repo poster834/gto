@@ -130,3 +130,94 @@ label{
     max-height: 80px;
     width: auto;
 }
+.menu_G_L{
+    display: none;
+    cursor: pointer;
+}
+
+.menu_G_L_0{
+    cursor: pointer;
+}
+
+.menuMachine
+{
+    display: none;
+    border-bottom:2px solid #aaa;
+}
+
+.visible
+{
+    display: block;
+}
+
+.adminMenuGroup{
+    display: block;
+    cursor: pointer;
+} 
+
+.adminMenuGroup:hover{
+    /* text-decoration: line-through; */
+    background-color: #640707;
+    color: #fff;
+}
+
+.noVisible
+{
+    display: none;
+}
+
+.pm{
+    margin-right: 5px;
+    color:  #640707;
+}
+
+.fa-minus-square{
+    /* color:#aaa; */
+    background-color: #640707;
+    border-radius: 5px;
+    height: 95%;
+}
+
+.menuMachineActive{
+    border-bottom: 2px solid #aaa;
+    border-left:10px solid #640707;
+    /* color:#fff; */
+    font-style: italic;
+    font-weight: bold;
+}
+
+.menuMachineDeActive{
+    border-bottom: 2px solid #aaa;
+    /* background-color:#fff; */
+    border-left:10px solid #fff;
+    /* color:#000; */
+}
+
+#closeSearchBtn{
+    cursor: pointer;
+    font-weight: bold;
+    color: #d50505;
+    position: absolute;
+    right: 0px;
+    top: 5px;
+}
+
+.menuMachine {
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.menuMachine:hover {
+    border-bottom: 2px solid #aaa;
+    border-left:10px solid #934e4e;
+}
+
+.notActiveForUser{
+    text-decoration: line-through;
+    color: #934e4e;
+}
+
+.activeForUser{
+    text-decoration: none;
+    color: #000;
+}

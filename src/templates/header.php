@@ -9,7 +9,11 @@
     <link rel="stylesheet" href="<?=__DIR__.'/../../../../../../gtm/vendor/twbs/bootstrap/dist/css/bootstrap.min.css'?>">
     <link rel="stylesheet" href="<?=__DIR__.'/../../../../../../gtm/vendor/font-awesome-4.7.0/css/font-awesome.min.css'?>">
 
-    <title>Система мониторинга транспорта <?= !empty($company->getName()) ? $company->getName():'Наименование компании';?></title>
+    <script src="<?=__DIR__.'/../../../../../../gtm/vendor/JQuery/jquery-3.5.1.min.js'?>"></script>
+        <script src="<?=__DIR__.'/../../../../../../gtm/vendor/JQuery/jquery.form.js'?>"></script>
+        <script src="<?=__DIR__.'/../../../../../../gtm/vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js'?>"></script> 
+        
+    <title>Система мониторинга транспорта <?= $company->getName();?></title>
 </head>
 <?php
 
@@ -28,7 +32,7 @@
             <div class="col">
                 <div class="companyData">
                     <h2>Система мониторинга транспорта</h2>
-                    <h4><?= !empty($company->getName()) ? $company->getName():'Наименование компании';?></h4>
+                    <h4><?= $company->getName();?></h4>
                 </div>
             </div>
             <div class="col-2 d-Flex">

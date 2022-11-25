@@ -89,6 +89,8 @@ $adminRoutes = [
         '~^geo_schema/load$~' => [Gtm\Controllers\SchemasController::class, 'geoSchemaLoad'],
         '~^schema/updateTableFromFile$~' => [Gtm\Controllers\SchemasController::class, 'updateTableFromFile'],
         '~^geo_schema/updateTableFromFile$~' => [Gtm\Controllers\SchemasController::class, 'updateFencesTableFromFile'],
+        '~^activateGroup/(\d+)/(.+)~' => [Gtm\Controllers\GroupsController::class, 'activateGroup'],
+        '~^activateGroup/(\d+)/(.+)~' => [Gtm\Controllers\GroupsController::class, 'activateGroup'],
 
 
 ];

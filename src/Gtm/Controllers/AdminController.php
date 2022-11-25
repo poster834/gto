@@ -13,6 +13,7 @@ use Gtm\Models\Groups\Group;
 use Gtm\Models\Properties\Properties;
 use Gtm\Models\PropertiesTypes\PropertiesType;
 use Gtm\Models\Devices\Device;
+use Gtm\Models\Schemas\Schema;
 
  ini_set('display_errors',1);
  error_reporting(E_ALL);
@@ -127,7 +128,7 @@ class AdminController extends AbstractController
     public function schema()
     {
         $groupsCount = Group::getCountInTable();
-        $groupsTree = Group::getGroupsTree();
+        $groupsTree = Schema::getSchemaTree();
         $machinesCount = Machine::getCountInTable();
         $dateTime = new \DateTime(Company::getById(1)->getDateUpdate());
         $devicesCount = Device::getCountInTable();
@@ -150,7 +151,11 @@ class AdminController extends AbstractController
     public function saveCompany()
     {
         $company = Company::getById(1);
-        $company->updateFromArray($_POST);
+        $arr = $_POST;
+        if (strlen($_POST['name'])<2) {
+            $arr['name'] = 'Наименование компании';
+        }
+        $company->updateFromArray($arr);
     }
 
     public function logoLoad()

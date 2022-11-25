@@ -21,7 +21,7 @@
     </div>
 </div>
 <!-- <script src="../gtm/src/script/scriptAdmin.js"></script> -->
-<script src="<?=__DIR__.'/../../../../../../../gtm/src/script/scriptAdmin.js'?>"></script>
+<!-- <script src="<?=__DIR__.'/../../../../../../../gtm/src/script/scriptAdmin.js'?>"></script> -->
 
 <?php //include('../gtm/src/templates/footer.php');?>
 <?php include (__DIR__.'/../footer.php');?>
