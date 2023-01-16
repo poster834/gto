@@ -48,4 +48,5 @@ class FailuresType extends ActiveRecordEntity
         $this->save();
         return $this;
     }
+
 }

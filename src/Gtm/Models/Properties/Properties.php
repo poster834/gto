@@ -101,4 +101,22 @@ class Properties extends ActiveRecordEntity
             }
         }
     }
+
+    public static function getActiveByUid($uid, $name)
+    {
+        $db = Db::getInstance();
+        $result = $db->queryAssoc('SELECT value FROM `'.static::getTableName().'` WHERE uid = :uid && name = :name;', [':uid'=>$uid, ':name'=>$name], static::class);
+        if ($result == NULL) {
+            $result[0]['value'] = 'не указано в АвтоГраф';
+        }
+        return $result[0]['value'];
+    }
+
+    public static function getAllByUid($uid)
+    {
+        $db = Db::getInstance();
+        $result = $db->queryAssoc('SELECT * FROM `'.static::getTableName().'` WHERE uid = :uid;', [':uid'=>$uid], static::class);
+        return $result;
+    }
+
 }

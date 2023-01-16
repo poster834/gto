@@ -19,7 +19,7 @@
                             <td><?=$user->getName();?><br><?=$user->getEmail();?><br><?=$user->getPhone();?></td>
                             <td><?=$user->getRole()->getDescription();?></td>
                             <?php if($user->getId() != 1):?>
-                                <td><label><b>Скрыть:</b><input type="checkbox" name="blocking" id="blocking" <?=$user->getBlocking();?> onchange="changeBlockUser(<?=$user->getId();?>)"></label></td>
+                                <td><label><b>Скрытый пользователь:</b><input type="checkbox" name="blocking" id="blocking" <?=$user->getBlocking();?> onchange="changeBlockUser(<?=$user->getId();?>)"></label></td>
                             <?php else:?> 
                                 <td>Админ</td>
                         <?php endif;?>

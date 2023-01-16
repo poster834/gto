@@ -7,6 +7,7 @@ use Gtm\Exceptions\NotFoundException;
 use Gtm\Exceptions\InvalidArgumentException;
 use Gtm\Exceptions\NotAllowException;
 use Gtm\Models\OffensesTypes\OffensesType;
+use Gtm\Models\Offenses\Offense;
 
 // ini_set('display_errors',1);
 // error_reporting(E_ALL);
@@ -40,11 +41,10 @@ class OffensesTypesController extends AbstractController
 
     public function delete(int $id)
     {
-        // $test = Failure::findOneByColumn('type_id',$id); //проверить в базе на наличие в других таблицах
-        $test = null;
+        $test = Offense::findOneByColumn('type_id',$id); //проверить в базе на наличие в других таблицах
         $offensesType = OffensesType::getById($id);
         if ($test !== null) {
-            $this->view->renderHtml('errors/relationError.php', ['table'=>'Поломки', 'data'=>"id => ".$test->getId()]);
+            $this->view->renderHtml('errors/relationError.php', ['table'=>'Нарушения', 'data'=>"id => ".$test->getId()]);
             exit();
         } else {
             $offensesType->delete();

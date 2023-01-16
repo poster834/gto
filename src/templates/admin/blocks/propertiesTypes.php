@@ -45,26 +45,8 @@
                  <span id="pagePaginator<?=$i;?>" class="pagePaginator" onclick="showBlock('propertiesTypes',<?=$i;?>)"><?=$i;?></span>
             <?php endfor;?>
             </div>
-            <!-- <hr>
-             <span class='btn btn-secondary' id="showAddRow" onclick="showFormAddRow('addPropertiesType')"><i class="fa fa-plus" aria-hidden="true"> Добавить</i></span> -->
     <hr>
-        <!-- <h4>Список доступных параметров, в загруженной схеме:</h4>
-        <table class='tableBase'>
-                <tr class='topTr'>
-                    <td>Имя параметра</td>
-                    <td>Количество в схеме</td>
-                    <td>Управление</td>
-                </tr>
-                <?php foreach($propertiesArray as $property):?>
-                    <?php if($property['use']<>true):?>
-                        <tr>
-                            <td><?=$property['name']?></td>
-                            <td><?=$property['count']?></td>
-                            <td><span class="btn btn-warning btn-sm" id="showAddRow" onclick="showFormAddRow('addPropertiesTypes','<?=$property['name']?>')"><i class="fa fa-plus" aria-hidden="true"></i></span></td>
-                        </tr>
-                    <?php endif;?>
-                <?php endforeach;?>
-        </table> -->
+
     </div>
 
         <div class="col-6">

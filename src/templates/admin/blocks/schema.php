@@ -10,43 +10,78 @@
         Всего Приборов в базе данных: <b><?=$devicesCount;?></b>
         <hr>
 
-        <h6>Заблокировать группы для пользователей</h6>
-        <!-- Активный поиск машин по списку в группах -->
-        <!-- <div style="position: relative;">
-            <input class="form-control pull-left" type="text" name="search" id="search">
-            <span id="closeSearchBtn" onclick="clearSearch()">[X]</span>
-        </div> -->
-
-
-<?php echo $groupsTree;?>
-
+        <h6>Блокировка групп для пользователей</h6>
+        <?php echo $groupsTree;?>
 
         </div>
         <div class="col-lg-9">
-            <h3>Загрузка и обновление списка машин</h3>
+            <h3>Загрузка и обновление схемы машин</h3>
             <hr>
             <div id="errors"></div>
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-4">
-                        <b>Вариант 1: обновить схему с WEB-сервера АвтоГРАФ</b><br><br> <button class='btn btn-primary' id='schemaWeb' name="schemaWeb" onclick="checkSchemaFile('web')">Запросить схему с сервера</button>
+                    <div class="col-lg-6">
+                    <b>Вариант 1: обновить схему с WEB-сервера АвтоГРАФ</b><br>
+                    
+                    <table>
+                        <tr>
+                            <td>СЕРВЕР: </td>
+                            <td id="serverUrl"><?=$server?></td>
+                        </tr>
+                        <tr>
+                            <td>ЛОГИН: </td>
+                            <td><?=$login?></td>
+                        </tr>
+                        <tr>
+                            <td>ТОКЕН: </td>
+                            <td>
+                                <?php if(strlen($token) < 1): ?> 
+                                    Получите ТОКЕН на вкладке <a href="#" onclick="showBlock('company')">Компания</a> 
+                                    <?php $btnShow=false;?>
+                                    <?php else:?>
+                                        <?php echo $token; $btnShow=true;?>
+                                    <?php endif;?></td>
+                        </tr>
+                    </table>
+
+                    <!-- <form id="schemaServerForm" action="admin" method="post">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td>HTTPS cервера:</td>
+                                <td><input type="text" name="serverUrl" id="serverUrl" placeholder="online.tkserver.ru"></td>
+                            </tr>
+                            <tr>
+                                <td>Логин:</td>
+                                <td><input type="text" name="serverLogin" id="serverLogin" placeholder="companyLogin"></td>
+                            </tr>
+                            <tr>
+                                <td>Пароль:</td>
+                                <td><input type="password" name="serverPassword" id="serverPassword" placeholder="*****"></td>
+                            </tr>
+                        </table>
+                    </form>-->
+                    <br>
+                    <?php if ($btnShow):?>
+                        <button class='btn btn-primary <?=$btnShow?>' id='schemaWeb' name="schemaWeb" onclick="checkSchemaFile('web','machine')">Запросить список доступных Схем машин</button> 
+                    <?php endif;?>
                     </div>
-                    <div class="col-lg-4">
-                    <b>Вариант 2: загрузить JSON файл схемы.</b> <br><span style="color:red;">ВАЖНО!</span> Файл должен быть сохранен в кодировке: <b>UTF-8 без BOM</b></br>
+
+                    <div class="col-lg-6">
+                    <!-- <b>Вариант 2: загрузить JSON файл схемы.</b> <br><span style="color:red;">ВАЖНО!</span> Файл должен быть сохранен в кодировке: <b>UTF-8 без BOM</b></br>
                     <form id="schemaFileSaveForm" action="admin/machines" method="post">
                         <label class="editInput" for="schemaFile"><b>Файл схемы:</b></label> <input id='schemaFile' class="editInput" name="schemaFile" type="file" onchange="checkSchemaFile('file')" accept=".json">  
-                    </form> 
+                    </form>  -->
                     </div>
-                    <div class="col-lg-4">
-                        <b>Обновить схему ГеоЗон с WEB-сервера АвтоГРАФ</b><br><br> <button class='btn btn-primary' id='schemaWeb' name="schemaWeb" onclick="checkSchemaFile('web_geo')">Запросить геозоны с сервера</button>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+
                     </div>
                 </div>
             </div>
 
             
             <div class="dataFile">
-                
-                        <hr>
            
             </div>
             <div id="result"></div>

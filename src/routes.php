@@ -10,23 +10,68 @@ $basicRoutes = [
 
 $userRoutes = [
     '~^system$~' => [Gtm\Controllers\MainController::class, 'system'],
+    '~^indexPage/$~' => [Gtm\Controllers\MainController::class, 'index'],
+    '~^schemaPage/$~' => [Gtm\Controllers\MainController::class, 'schema'],
+    '~^directionsPage/$~' => [Gtm\Controllers\MainController::class, 'directions'],
+    '~^failuresPageByDirection/$~' => [Gtm\Controllers\MainController::class, 'failuresPageByDirection'],
+    '~^failuresPageByType/$~' => [Gtm\Controllers\MainController::class, 'failuresPageByType'],
+    '~^failuresPageByMechanic/$~' => [Gtm\Controllers\MainController::class, 'failuresPageByMechanic'],
+
+    '~^getMachineInfo/(.+)$~' => [Gtm\Controllers\MachinesController::class, 'getMachineInfo'],
+    '~^system/showFailures/(.+)/(\d+)$~' => [Gtm\Controllers\FailuresController::class, 'show'],
+    '~^system/saveTask/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'saveTask'],
+    '~^system/deleteTask/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'deleteTask'],
+    '~^system/newFailuresPhoto/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'addPhoto'],
+    '~^system/failures/showPhoto/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'showPhoto'],
+    '~^system/failuresPhoto/delete/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'deletePhoto'],
+    '~^system/addFailures/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'showAddFailuresBtn'],    
+    '~^system/showAddFailureForm/(.+)/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'showAddFailuresForm'], 
+    '~^system/changeMechanic/(.+)/(.+)$~' => [Gtm\Controllers\MachinesController::class, 'changeMechanic'], 
+    '~^system/changeRegion/(.+)/(.+)$~' => [Gtm\Controllers\MachinesController::class, 'changeRegion'], 
+    '~^system/saveFailure/(.+)/(.+)/(.+)/(.+)/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'saveFailure'], 
+    '~^system/selectDirection/(.+)$~' => [Gtm\Controllers\DirectionsController::class, 'selectDirection'], 
+    '~^system/selectFailuresType/(.+)/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'selectFailuresType'], 
+    '~^system/showRegionInfo/(.+)/(.+)$~' => [Gtm\Controllers\RegionsController::class, 'showRegionInfo'],
+    '~^system/sendFailuresAlerts/(.+)$~' => [Gtm\Controllers\AlertsController::class, 'sendFailuresAlerts'],
+    '~^system/inParking/(.+)$~' => [Gtm\Controllers\ParkingsController::class, 'inParking'],
+    '~^system/outParking/(.+)$~' => [Gtm\Controllers\ParkingsController::class, 'outParking'],
+    '~^system/saveDescription/(.+)/(.+)$~' => [Gtm\Controllers\FailuresController::class, 'saveDescription'],
+    '~^system/setParkingReason/(.+)/(.+)$~' => [Gtm\Controllers\ParkingsController::class, 'setParkingReason'],  
+    '~^system/setParkingComment/(.+)/(.+)$~' => [Gtm\Controllers\ParkingsController::class, 'setParkingComment'],  
+    '~^wialonAccounts/(\d+)$~' => [Gtm\Controllers\WialonAccountController::class, 'wialonAccounts'],
+    '~^wialonAccounts/$~' => [Gtm\Controllers\WialonAccountController::class, 'wialonAccounts'],
+    '~^saveToken/(\d+)/(.+)$~' => [Gtm\Controllers\WialonAccountController::class, 'saveToken'],
+    '~^updateMachineList/(\d+)/(.+)$~' => [Gtm\Controllers\WialonAccountController::class, 'updateMachineList'],
+    '~^hiredCar/(\d+)$~' => [Gtm\Controllers\HiredMachineController::class, 'showHiredCar'],
+    '~^showHCarInfo/(\d+)$~' => [Gtm\Controllers\HiredMachineController::class, 'showHCarInfo'],
+    '~^addOffensesHiredCar/(.+)/(\d+)/(\d+)$~' => [Gtm\Controllers\HiredMachineController::class, 'addOffensesHiredCar'],
+    '~^getStops/(\d+)/(.+)/(.+)/(.+)/(.+)/(.+)$~' => [Gtm\Controllers\MachinesController::class, 'getStops'],
+    
+    
+
 ];
 $userRoutes = array_merge($basicRoutes, $userRoutes);
 
 $adminRoutes = [
         '~^admin$~' => [Gtm\Controllers\AdminController::class, 'mainAdmin'],
-        '~^admin/company/$~' => [Gtm\Controllers\AdminController::class, 'company'],
-        '~^admin/roles/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'roles'],
-        '~^admin/users/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'users'],
-        '~^admin/directions/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'directions'],
-        '~^admin/regions/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'regions'],
-        '~^admin/failuresTypes/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'failuresTypes'],
-        '~^admin/offensesTypes/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'offensesTypes'],
-        '~^admin/machines/$~' => [Gtm\Controllers\AdminController::class, 'machines'],
-        '~^admin/schema/$~' => [Gtm\Controllers\AdminController::class, 'schema'],
-        '~^admin/propertiesTypes/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'propertiesTypes'],
+        '~^getAgToken/$~' => [Gtm\Controllers\AdminController::class, 'getAgToken'],
+        '~^company/$~' => [Gtm\Controllers\AdminController::class, 'company'],
+        '~^roles/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'roles'],
+        '~^users/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'users'],
+        '~^directions/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'directions'],
+        '~^regions/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'regions'],
+        '~^failuresTypes/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'failuresTypes'],
+        '~^offensesTypes/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'offensesTypes'],
+        '~^machines/$~' => [Gtm\Controllers\AdminController::class, 'machines'],
+        '~^schema/$~' => [Gtm\Controllers\AdminController::class, 'schema'],
+        '~^propertiesTypes/(\d+)$~' => [Gtm\Controllers\AdminController::class, 'propertiesTypes'],
         '~^company/deleteLogo$~' => [Gtm\Controllers\AdminController::class, 'deleteLogo'],
+        '~^selectGroup/(.+)/(.+)$~' => [Gtm\Controllers\GroupsController::class, 'selectGroup'],
+        '~^updateGeoCoords/$~' => [Gtm\Controllers\SchemasController::class, 'updateGeoCoords'],
         
+        '~^wialonAccounts/save$~' => [Gtm\Controllers\WialonAccountController::class, 'saveWialonAccount'],
+        '~^addWialonAccount$~' => [Gtm\Controllers\WialonAccountController::class, 'showAddForm'],
+        '~^geoSchema/$~' => [Gtm\Controllers\SchemasController::class, 'geoSchema'],
 
         // '~^machines/block/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'block'],
         // '~^machines/edit/(\d+)$~' => [Gtm\Controllers\MachinesController::class, 'edit'],
@@ -84,14 +129,16 @@ $adminRoutes = [
         '~^addUser$~' => [Gtm\Controllers\UsersController::class, 'showAdd'],
         '~^company/save$~' => [Gtm\Controllers\AdminController::class, 'saveCompany'],
         '~^logo/load$~' => [Gtm\Controllers\AdminController::class, 'logoLoad'],
-        '~^schema/check/(file|web|web_geo)$~' => [Gtm\Controllers\SchemasController::class, 'schemaCheck'],
+        '~^schema/check/(file|web|web_geo)/(machine|geo)$~' => [Gtm\Controllers\SchemasController::class, 'schemaCheck'],
+        '~^schema/web/load/(.+)$~' => [Gtm\Controllers\SchemasController::class, 'schemaWebLoad'],
+        '~^geoSchema/web/load/(.+)$~' => [Gtm\Controllers\SchemasController::class, 'geoSchemaWebLoad'],
         '~^schema/load$~' => [Gtm\Controllers\SchemasController::class, 'schemaLoad'],
         '~^geo_schema/load$~' => [Gtm\Controllers\SchemasController::class, 'geoSchemaLoad'],
         '~^schema/updateTableFromFile$~' => [Gtm\Controllers\SchemasController::class, 'updateTableFromFile'],
         '~^geo_schema/updateTableFromFile$~' => [Gtm\Controllers\SchemasController::class, 'updateFencesTableFromFile'],
         '~^activateGroup/(\d+)/(.+)~' => [Gtm\Controllers\GroupsController::class, 'activateGroup'],
-        '~^activateGroup/(\d+)/(.+)~' => [Gtm\Controllers\GroupsController::class, 'activateGroup'],
-
+        
+        // '~^activateGroup/(\d+)/(.+)~' => [Gtm\Controllers\GroupsController::class, 'activateGroup'],
 
 ];
 $adminRoutes = array_merge($adminRoutes, $userRoutes);

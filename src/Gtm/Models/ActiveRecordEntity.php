@@ -68,6 +68,22 @@ abstract class ActiveRecordEntity
         return $result[0];
     }
 
+
+    public static function findAllByColumn($columnName, $value)
+    {
+        $db = Db::getInstance();
+        $result = $db->query(
+            'SELECT * FROM `'.static::getTableName(). '` WHERE `'.$columnName.'` =:value;',
+            [':value'=>$value],
+            static::class
+        );
+        if ($result === []) {
+            return null;
+        }
+        return $result;
+    }
+
+
     private function mapPropertiesToDbFormat()
     {
         $reflector = new \ReflectionObject($this);
@@ -134,14 +150,17 @@ private function insert(array $mappedProperties)
         $db->query($sql, $params2values, static::class);
         $this->id = $db->getLastInsertId();
         $this->refresh();
-    }
+}
 
     private function refresh()
     {
         $objectFromDb = static::getById($this->id);
-        foreach ($objectFromDb as $property => $value) {
-            $this->$property = $value;
+        if (count($objectFromDb)>0) {
+            foreach ($objectFromDb as $property => $value) {
+                $this->$property = $value;
+            }
         }
+
     }
 
     public function delete()
@@ -220,12 +239,14 @@ private function insert(array $mappedProperties)
         $result = $db->query($sql);
         return $result;
     }
+    
     public static function getCountInTable()
     {
         $db = Db::getInstance();
         $result = $db->query('SELECT COUNT(*) as count FROM `'.static::getTableName().'` WHERE 1;',[]);
         return $result[0]->count;
     }
+
 
     abstract protected static function getTableName();
     abstract protected static function getCountPerPage();

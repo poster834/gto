@@ -5,6 +5,7 @@ use Gtm\Models\ActiveRecordEntity;
 use Gtm\Exceptions\InvalidArgumentException;
 use Gtm\Exceptions\NotAllowException;
 use Gtm\Models\Roles\Role;
+use Gtm\Services\Db;
 
 class User extends ActiveRecordEntity
 {
@@ -109,7 +110,7 @@ class User extends ActiveRecordEntity
     
     public function getRoleId()
     {
-        return $this->role;
+        return $this->roleId;
     }
 
     public function getAuthToken()
@@ -286,6 +287,5 @@ class User extends ActiveRecordEntity
         $this->save();
         return $this;
     }
-
     
 }

@@ -1,9 +1,11 @@
 <h3>Редакторировать Район</h3>
 <?php
     $regionsDirection = $region->getDirectionId();
+    $id = $region->getId();
 ?>
 <form id="regionsEditForm" action="" method="post">
-    <label class="editInput" for="fio"><b>Направление:</b></label> <input class="editInput" name="name" type="text" value="<?=$region->getName();?>">
+<label class="editInput" for="id"><b>id:</b></label> <input class="editInput" readonly name="id" type="text" value="<?=$id?>">    
+<label class="editInput" for="fio"><b>Направление:</b></label> <input class="editInput" name="name" type="text" value="<?=$region->getName();?>">
     <br>
     <label class="editInput" for="direction"><b>Направление:</b></label> 
     <select class="editInput" name="direction" id="direction">

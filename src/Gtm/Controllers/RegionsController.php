@@ -5,6 +5,8 @@ use Gtm\Models\Regions\Region;
 use Gtm\Models\Directions\Direction;
 use Gtm\Exceptions\NotFoundException;
 use Gtm\Exceptions\InvalidArgumentException;
+use Gtm\Models\Failures\Failure;
+use Gtm\Models\MachinesFixed\MachineFixed;
 
 // ini_set('display_errors',1);
 // error_reporting(E_ALL);
@@ -40,11 +42,10 @@ class RegionsController extends AbstractController
 
     public function delete(int $id)
     {
-                // $machinesTest = Machine::findOneByColumn('region_id',$id);
-                $machinesTest = null;
+                $test = MachineFixed::findOneByColumn('region_id',$id);
                 $deleteRegion = Region::getById($id);
-                if ($machinesTest !== null) {
-                    $this->view->renderHtml('errors/relationError.php', ['table'=>'Поломки', 'data'=>"id => ".$machinesTest->getId()]);
+                if ($test !== null) {
+                    $this->view->renderHtml('errors/relationError.php', ['table'=>'Привязка машин к районам', 'data'=>"id => ".$test->getId()]);
                     exit();
                 } else {
                     $deleteRegion->delete();
@@ -72,4 +73,20 @@ class RegionsController extends AbstractController
         $this->view->renderHtml('admin/blocks/addRegion.php', ['directions'=>$directions]);
     }
 
+
+    public function showRegionInfo($id,$page)
+    {
+        $region = Region::getById($id);
+        $activeFailures = Failure::findActiveByRegionId($id, $page);
+        $servicedFailures = Failure::findServisedByRegionId($id);
+        $pages = Failure::getActivePaginatorPagesByColumn('region_id', $id);
+        $this->view->renderHtml('main/blocks/showRegionInfo.php',[
+            'region'=>$region,
+            'activeFailures'=>$activeFailures,
+            'servicedFailures'=>$servicedFailures,
+            'pages'=>$pages,
+            'activePage'=>$page
+
+        ]);  
+    }
 }

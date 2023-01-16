@@ -4,10 +4,16 @@ namespace Gtm\Controllers;
 use Gtm\Models\Groups\Group;
 use Gtm\Models\Machines\Machine;
 use Gtm\Models\Companys\Company;
+use Gtm\Models\Coords\Coord;
+use Gtm\Models\Coords\CoordLocality;
+use Gtm\Models\Coords\CoordPlant;
+use Gtm\Models\Coords\CoordRoad;
 use Gtm\Models\Properties\Properties;
 use Gtm\Models\PropertiesTypes\PropertiesType;
 use Gtm\Models\Devices\Device;
 use Gtm\Models\Fences\Fence;
+use Gtm\Models\Groups\GeoGroup;
+use Gtm\Models\Schemas\GeoSchema;
 
 ini_set('display_errors',1);
 error_reporting(E_ALL);
@@ -27,8 +33,10 @@ class SchemasController extends AbstractController
         }
         if ($moveKey) {
             // Далее можно сохранить название файла в БД и т.п.
-            echo '<hr><span style="background-color:green;color:#fff;">Файл '.$name.' - успешно сохранен.</span><hr>';
-            echo '<span class="btn btn-success" onclick="schemaSave()">Обновить список машин</span>';    
+            echo '<hr><span style="background-color:green;color:#fff;">Файл '.$name.' - успешно сохранен.</span>
+            
+            <hr><span>Подтвердите обновление списка машин из сохраненного файла схемы.</span><br><br>';
+            echo '<span class="btn btn-success" onclick="schemaSave()">Обновить список машин</span> <span class="btn btn-danger" onclick="cancelSchema()">Отмена</span>';    
         } else {
             $error = '<hr>Не удалось загрузить файл.';
             echo '<span style="background-color:red;color:#fff;">' . $error . '</span>';
@@ -57,21 +65,19 @@ class SchemasController extends AbstractController
         }   
     }
 
-    
 
-    public function schemaCheck($src)
+    public function schemaCheck($src,$schemaType)
     {
+        // $schemaType = ('machine'|'geo');
         $source = '';
         if ($src == 'file') {
             $source = ' JSON файл схемы';
         }
         if ($src == 'web') {
-            $source = 'WEB приложение On-Line';
+            $source = 'WEB приложение On-Line<br>';
         }
-        if ($src == 'web_geo') {
-            $source = 'Обновление Геозон с WEB On-Line';
-        }
-        echo 'Способ загрузки - '. $source;
+        echo '<hr>Способ загрузки - '. $source;
+
         $file = @$_FILES['schemaFile'];
         $error = '';
         $allow = array('json');
@@ -124,36 +130,71 @@ class SchemasController extends AbstractController
                 } 
             }
         } else if ($src == 'web'){
-            $data = file_get_contents('https://online.tkglonass.ru/ServiceJSON/EnumDevices?session=323BCAA0101C6321519B278B6EC1174C4BBCBD06A2A10BDE04C139134F4EEB01&schemaID=31177dec-ea50-4f56-a1f1-5550b56f8eed', true);
-            file_put_contents(__DIR__.'/../../data/schema_tmp.json', $data);
-            $obj = json_decode($data, true);
-        } else if ($src == 'web_geo'){
-            $data_geo = file_get_contents('https://online.tkglonass.ru/ServiceJSON/EnumGeoFences?session=323BCAA0101C6321519B278B6EC1174C4BBCBD06A2A10BDE04C139134F4EEB01&schemaID=31177dec-ea50-4f56-a1f1-5550b56f8eed', true);
-            file_put_contents(__DIR__.'/../../data/geo_schema_tmp.json', $data_geo);
-            $obj_geo = json_decode($data_geo, true);
+            $token = Company::getById(1)->getAgToken();
+            $url = Company::getById(1)->getAgServer();      
+            $getUrl = "https://".$url."/ServiceJSON/EnumSchemas?session=".$token."'";
+            $schemas = file_get_contents($getUrl);
+
+            $this->view->renderHtml('admin/blocks/schemaSelect.php',[
+                'schemas' => $schemas,
+                'token' => $token,
+                'type' => $schemaType,
+            ]);
         }
+   
+    }
+
+    public function schemaWebLoad($schema)
+    {   
+        $token = Company::getById(1)->getAgToken();
+        $url = Company::getById(1)->getAgServer();
+        $data = file_get_contents('https://'.$url.'/ServiceJSON/EnumDevices?session='.$token.'&schemaID='.$schema, true);
+        file_put_contents(__DIR__.'/../../data/schema_tmp.json', $data);
+        $obj = json_decode($data, true);
         $groups = $items = 0;
         $result = '';
         if (isset($obj['Groups'])) {
             $groups = count($obj['Groups']);
-            $result .= '<hr>Всего Групп Машин в предложенной схеме: <b>'.$groups."</b><br>";
+            $result .= '<hr>Всего Групп в предложенной схеме: <b>'.$groups."</b><br>";
         }
         if (isset($obj['Items'])) {
             $items = count($obj['Items']);
-            $result .= 'Всего Машин в предложенной схеме:  <b>'.$items." </b><hr>";
+            $result .= 'Всего Машин в предложенной схеме:  <b>'.$items." </b><hr>
+            Вы можете сохранить файл схемы для дальнейшего обновления базы данных<br><br>";
         }
-        if (isset($obj_geo['Items'])) {
-            $items_geo = count($obj_geo['Items']);
-            $result = 'Всего Геозон в предложенной схеме:  <b>'.$items_geo." </b><hr>";
-        }
-        echo '<br>'.$result;
+        echo $result;
    
-        if (($items>$groups) && ($groups>0)) {
-            echo '<span class="btn btn-success" onclick="schemaLoad()">Сохранить файл схемы</span>   <span class="btn btn-danger" onclick="cancelSchema()">Отмена</span>';   
-        } else if($items_geo > 0){
-            echo '<span class="btn btn-success" onclick="geo_schemaLoad()">Сохранить файл геозон</span>   <span class="btn btn-danger" onclick="cancelSchema()">Отмена</span>';   
+        if (($items>0) && ($groups>0)) {
+            echo '<span class="btn btn-success" onclick="schemaLoad()">Сохранить файл схемы</span>   <span class="btn btn-danger" onclick="cancelSchema(\'schema\')">Отмена</span>';   
         } else {
-            echo '<span style="background-color:red;color:#fff;">Похоже на то, что в файле нет нужных данных. Выберете другой файл</span> <br> <span class="btn btn-danger" onclick="cancelSchema()">Отмена</span>';  
+            echo '<span style="background-color:red;color:#fff;">Похоже на то, что в файле нет нужных данных. Выберете другой файл</span> <br> <span class="btn btn-danger" onclick="cancelSchema(\'schema\')">Отмена</span>';  
+        }
+    }
+
+    public function geoSchemaWebLoad($schema)
+    {   
+        $token = Company::getById(1)->getAgToken();
+        $url = Company::getById(1)->getAgServer();
+        $data = file_get_contents('https://'.$url.'/ServiceJSON/EnumGeoFences?session='.$token.'&schemaID='.$schema, true);
+        file_put_contents(__DIR__.'/../../data/geo_schema_tmp.json', $data);
+        $obj = json_decode($data, true);
+        $groups = $items = 0;
+        $result = '';
+        if (isset($obj['Groups'])) {
+            $groups = count($obj['Groups']);
+            $result .= '<hr>Всего Групп в предложенной схеме: <b>'.$groups."</b><br>";
+        }
+        if (isset($obj['Items'])) {
+            $items = count($obj['Items']);
+            $result .= 'Всего Геозон в предложенной схеме:  <b>'.$items." </b><hr>
+            Вы можете сохранить файл схемы для дальнейшего обновления базы данных<br><br>";
+        }
+        echo $result;
+   
+        if (($items>0) && ($groups>0)) {
+            echo '<span class="btn btn-success" onclick="geo_schemaLoad()">Сохранить файл схемы</span>   <span class="btn btn-danger" onclick="cancelSchema(\'geoSchema\')">Отмена</span>';   
+        } else {
+            echo '<span style="background-color:red;color:#fff;">Похоже на то, что в файле нет нужных данных. Выберете другой файл</span> <br> <span class="btn btn-danger" onclick="cancelSchema(\'geoSchema\')">Отмена</span>';  
         }
     }
 
@@ -174,6 +215,15 @@ class SchemasController extends AbstractController
         $arrays_G_I = json_decode($fileJSON, true);
         $geoGroups = $arrays_G_I['Groups'];
         $fences = $arrays_G_I['Items'];
+        $root = GeoGroup::getRootGeoGroup();
+  
+        GeoSchema::setParamByName('schemaName', $root->getName());
+        GeoSchema::setParamByName('schemaId', $arrays_G_I['ID']);
+        GeoSchema::setParamByName('rootGuid', $root->getUid());
+        GeoSchema::setParamByName('upDate', date('Y-m-d H:i:s'));
+
+        GeoGroup::truncateTable();
+        GeoGroup::saveToBase($geoGroups);
         Fence::truncateTable();
         Fence::saveToBase($fences);
     }
@@ -288,8 +338,184 @@ class SchemasController extends AbstractController
         $today = date('Y-m-d H:i:s');
         $company->setDateUpdate($today);
         $company->save();
-        echo "В случае отсутствия ошибок данные обновятся через 5 секунд.<pre>";
+        echo "ok";
         
     }
 
+    public function geoSchema()
+    {
+        $token = Company::getById(1)->getAgToken();
+        $url = Company::getById(1)->getAgServer();
+        $login = Company::getById(1)->getAgLogin();
+        // $geoSchema = GeoSchema::getInstance();
+        $geoGroups = GeoGroup::findAll();
+        $geoFences = Fence::findAll();
+        $rootGroup = GeoGroup::getRootGeoGroup();
+        $rootGroupUid = $rootGroup->getUid();
+        $allGeoGroups = GeoGroup::findAll();
+        $companyName = Company::getById(1)->getName();
+        foreach($allGeoGroups as $key => $group)
+        {
+            if ($group->getUid() == $rootGroupUid) {
+                unset($allGeoGroups[$key]);
+            }
+        }
+        $upDate = null;
+        $forageUid = GeoSchema::getParamByName('forageUid');
+        $plantsUid = GeoSchema::getParamByName('plantsUid');
+        $upDate = GeoSchema::getParamByName('upDate');
+        $granariesUid = GeoSchema::getParamByName('granariesUid');
+        $farmsUid = GeoSchema::getParamByName('farmsUid');
+        $roadsUid = GeoSchema::getParamByName('roadsUid');
+        $localityUid = GeoSchema::getParamByName('localityUid');        
+        $plantsFences = Fence::findAllByColumn('guid', $plantsUid);
+        $granariesFences = Fence::findAllByColumn('guid', $granariesUid);
+
+        $this->view->renderHtml('admin/geoSchema.php',[
+            'upDate' => $upDate,
+            'token' => $token,
+            'server' => $url,
+            'login' => $login,
+            'geoGroups' => $geoGroups,
+            'geoFences' => $geoFences,
+            'geoGroupAllLevel' => $allGeoGroups,
+            'forageUid' => $forageUid,
+            'plantsUid' => $plantsUid,
+            'plantsFences' => $plantsFences,
+            'companyName' => $companyName,
+            'granariesUid' => $granariesUid,
+            'granariesFences' => $granariesFences,
+            'farmsUid' => $farmsUid,
+            'roadsUid' => $roadsUid,
+            'localityUid' => $localityUid,
+        ]);
+    }
+
+    public function updateGeoCoords()
+    {
+        $token = Company::getById(1)->getAgToken();
+        $url = Company::getById(1)->getAgServer();
+
+        $geoSchemaParams = GeoSchema::getAllParams();
+
+        $schemaId = GeoSchema::getParamByName('schemaId');
+        $plantsUid = GeoSchema::getParamByName('plantsUid');
+        $roadsUid = GeoSchema::getParamByName('roadsUid');
+        $localityUid = GeoSchema::getParamByName('localityUid');
+        
+        $geoSchemaParamsName = [];
+        foreach($geoSchemaParams as $key => $param)
+        {
+            $geoSchemaParamsName[$param['name']]=$param['value'];
+        }
+
+        $flipGeoSchemaParams = array_flip($geoSchemaParamsName);
+
+        $urlPlants = 'https://'.$url.'/ServiceJSON/GetGeofences?session='.$token.'&schemaID='.$schemaId.'&IDs='.$plantsUid; //площадки ГК Талина
+        $dataP = file_get_contents($urlPlants, true);
+        $plantsArr = json_decode($dataP, true);
+        $i1 = $i2 = $i3 = 0;
+
+        Coord::truncateTable();
+
+        foreach($plantsArr as $plant)
+        {
+            $xs = $plant['Lat'];
+            $ys = $plant['Lng'];
+        $i1++;
+        
+        $type = '';
+        if (isset($flipGeoSchemaParams[$plant['ParentID']])) {
+            $type = $flipGeoSchemaParams[$plant['ParentID']];
+        }
+        if (isset($flipGeoSchemaParams[$plant['ID']])) {
+            $type = $flipGeoSchemaParams[$plant['ID']];
+        }
+        if ($type <> '') {
+            foreach($xs as $key => $val)
+            {
+                $coord = new Coord();
+                $coord->setFenceUid($plant['ID']);
+                $coord->setParentUid($plant['ParentID']);
+                $coord->setXCoord($val);
+                $coord->setYCoord($ys[$key]);
+                $coord->setType($type);
+                $coord->save();           
+            }
+        }
+            
+        }
+
+        $urlRoads = 'https://'.$url.'/ServiceJSON/GetGeofences?session='.$token.'&schemaID='.$schemaId.'&IDs='.$roadsUid; //дороги
+        $dataR = file_get_contents($urlRoads, true);
+        $roadsArr = json_decode($dataR, true);
+     
+        foreach($roadsArr as $road)
+        {
+            $xs = $road['Lat'];
+            $ys = $road['Lng'];
+    $i2++;
+        $type = '';
+        if (isset($flipGeoSchemaParams[$road['ParentID']])) {
+            $type = $flipGeoSchemaParams[$road['ParentID']];
+        }
+        if (isset($flipGeoSchemaParams[$road['ID']])) {
+            $type = $flipGeoSchemaParams[$road['ID']];
+        }
+            if ($type <> '') {
+                foreach($xs as $key => $val)
+                {
+                    $coord = new Coord();
+                    $coord->setFenceUid($road['ID']);
+                    $coord->setParentUid($road['ParentID']);
+                    $coord->setXCoord($val);
+                    $coord->setYCoord($ys[$key]);
+                    $coord->setType($type);
+                    $coord->save();           
+                }
+            }
+        }
+
+        $urlLocality = 'https://'.$url.'/ServiceJSON/GetGeofences?session='.$token.'&schemaID='.$schemaId.'&IDs='.$localityUid; //населенные пункты
+        $dataL = file_get_contents($urlLocality, true);
+        $localityArr = json_decode($dataL, true);
+            
+        foreach($localityArr as $locality)
+        {
+            $xs = $locality['Lat'];
+            $ys = $locality['Lng'];
+    $i3++;
+    $type = '';
+    if (isset($flipGeoSchemaParams[$locality['ParentID']])) {
+        $type = $flipGeoSchemaParams[$locality['ParentID']];
+    }
+    if (isset($flipGeoSchemaParams[$locality['ID']])) {
+        $type = $flipGeoSchemaParams[$locality['ID']];
+    }
+        if ($type <> '') {
+            foreach($xs as $key => $val)
+            {
+                $coord = new Coord();
+                $coord->setFenceUid($locality['ID']);
+                $coord->setParentUid($locality['ParentID']);
+                $coord->setXCoord($val);
+                $coord->setYCoord($ys[$key]);
+                $coord->setType($type);
+                $coord->save();           
+            }
+        }
+        }
+        echo "Загрузка завершена. Добавлено геозон в БД: 
+        <br><b>Площадки ГК Талина:</b> $i1
+        <br><b>Трасса (дороги):</b> $i2
+        <br><b>Населенные пункты:</b> $i3
+        ";
+    }
+
+    public function getGeoPlants()
+    {
+
+    }
+
 }
+

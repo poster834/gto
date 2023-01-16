@@ -1,0 +1,100 @@
+<?php
+namespace Gtm\Models\Coords;
+
+use Gtm\Models\ActiveRecordEntity;
+use Gtm\Services\Db;
+use Gtm\Models\Companys\Company;
+use Gtm\Models\Fences\Fence;
+use Gtm\Models\Machines\Machine;
+
+class CoordPlant extends Fence
+{
+    /** @var string*/
+    protected $fenceUid;
+
+    /** @var float*/
+    protected $xCoord;
+
+    /** @var float*/
+    protected $yCoord;
+
+    /** @var array*/
+    protected $xCoords;
+
+    /** @var array*/
+    protected $yCoords;
+    
+    public function getFenceUid()
+    {
+        return $this->fenceUid;
+    }
+    public function setFenceUid($val)
+    {
+        $this->fenceUid = $val;
+    }
+
+    // public function getXCoord()
+    // {
+    //     return $this->xCoord;
+    // }
+    public function setXCoord($val)
+    {
+        $this->xCoord = $val;
+    }
+
+    // public function getYCoord()
+    // {
+    //     return $this->yCoord;
+    // }
+    public function setYCoord($val)
+    {
+        $this->yCoord = $val;
+    }
+    public static function getTableName()
+    {
+        return 'coordsPlants';
+    }
+
+    public static function getCountPerPage()
+    {
+        return 5;
+    }
+
+    // public function getXCoords()
+    // {
+    //     $db = Db::getInstance();  
+    //     $result = $db->queryAssoc('SELECT x_coord FROM `'.static::getTableName().'` WHERE fence_uid = :fence_uid;', [':fence_uid' => $this->fenceUid]);
+        
+    //     if (count($result)>0) {
+    //         return $result[0]['x_coord'];    
+    //     }
+    //     return null;          
+    // }
+
+    // public function getYCoords()
+    // {
+    //     $db = Db::getInstance();  
+    //     $result = $db->queryAssoc('SELECT y_coord FROM `'.static::getTableName().'` WHERE fence_uid = :fence_uid;', [':fence_uid' => $this->fenceUid]);
+        
+    //     if (count($result)>0) {
+    //         return $result[0]['y_coord'];    
+    //     }
+    //     return null;          
+    // }
+
+    public static function getAllPlantsUid()
+    {
+        $db = Db::getInstance();  
+        $result = $db->queryAssoc('SELECT DISTINCT fence_uid FROM `'.static::getTableName().'`;', []);
+        
+        if (count($result)>0) {
+            foreach($result as $plantUid)
+            {
+                $plantsUid[] = $plantUid['fence_uid'];
+            }
+            return $plantsUid;    
+        }
+        return null;          
+    }
+
+}

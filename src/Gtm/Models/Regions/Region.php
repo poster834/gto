@@ -4,6 +4,7 @@ namespace Gtm\Models\Regions;
 use Gtm\Models\ActiveRecordEntity;
 use Gtm\Exceptions\InvalidArgumentException;
 use Gtm\Models\Directions\Direction;
+use Gtm\Services\Db;
 
 class Region extends ActiveRecordEntity
 {
@@ -67,5 +68,12 @@ class Region extends ActiveRecordEntity
         $this->setDirection($fields['direction']);
         $this->save();
         return $this;
+    }
+
+    public static function getByDirectionId($id)
+    {
+        $db = Db::getInstance();  
+        $regions = $db->query('SELECT * FROM `'.static::getTableName().'` WHERE direction = :direction ;', [':direction' => $id], static::class);
+        return $regions;
     }
 }

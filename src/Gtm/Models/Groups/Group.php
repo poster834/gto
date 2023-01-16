@@ -53,12 +53,12 @@ class Group extends ActiveRecordEntity
 
     public function getName()
     {
-        return $this->isBlocked;
+        return $this->name;
     }
 
     public function getIsBlocked()
     {
-        return $this->name;
+        return $this->isBlocked;
     }
 
     public function getSelfGuid()
@@ -99,61 +99,78 @@ class Group extends ActiveRecordEntity
             $group->setBlocked(in_array($groupArr['ID'], $blockedArr));
             $group->save();
         }
-        // self::checkBlockedGroup();
     }
 
 
 
     public static function getInnerGroup($guid)
     {
+        // var_dump($guid);
         $array = null;
         $db = Db::getInstance();
         $innerGroups = $db->queryAssoc('SELECT * FROM `'.static::getTableName().'` WHERE parent_guid = :parent_guid ;', [':parent_guid' => $guid]);
-        if (count($innerGroups) > 0) 
-        {
+        $isRoot = $db->queryAssoc('SELECT parent_guid FROM `'.static::getTableName().'` WHERE self_guid = :guid ;', [':guid' => $guid]);
+        if (count($innerGroups) < 1 && $isRoot[0]['parent_guid'] == NULL) {
+            $innerGroups = $db->queryAssoc('SELECT * FROM `'.static::getTableName().'` WHERE self_guid = :guid ;', [':guid' => $guid]);
             foreach($innerGroups as $iG)
-            {
+            {    
                 $array[$iG['self_guid']]['name'] = $iG['name'];
                 $array[$iG['self_guid']]['is_blocked'] = $iG['is_blocked'];
                 $array[$iG['self_guid']]['self_guid'] = $iG['self_guid'];
                 $array[$iG['self_guid']]['parent_guid'] = $iG['parent_guid'];
-                $array[$iG['self_guid']]['Groups'] = Group::getInnerGroup($iG['self_guid']);    
                 $array[$iG['self_guid']]['Machines'] = Machine::getInnerMachines($iG['self_guid']);
             }
+        } else {
+
+                foreach($innerGroups as $iG)
+                {
+                    $array[$iG['self_guid']]['name'] = $iG['name'];
+                    $array[$iG['self_guid']]['is_blocked'] = $iG['is_blocked'];
+                    $array[$iG['self_guid']]['self_guid'] = $iG['self_guid'];
+                    $array[$iG['self_guid']]['parent_guid'] = $iG['parent_guid'];
+                    $array[$iG['self_guid']]['Groups'] = Group::getInnerGroup($iG['self_guid']);    
+                    $array[$iG['self_guid']]['Machines'] = Machine::getInnerMachines($iG['self_guid']);
+                }
+                if ($isRoot[0]['parent_guid'] == NULL) {
+                    $array[$guid]['name'] = '';
+                    $array[$guid]['is_blocked'] = 0;
+                    $array[$guid]['self_guid'] = $guid;
+                    $array[$guid]['parent_guid'] = NULL;
+                    $array[$guid]['Machines'] = Machine::getInnerMachines($guid);
+                }
+
         }
+        // else if(){
+        //     foreach($innerGroups as $iG)
+        //     {
+        //         $array[$iG['self_guid']]['name'] = $iG['name'];
+        //         $array[$iG['self_guid']]['is_blocked'] = $iG['is_blocked'];
+        //         $array[$iG['self_guid']]['self_guid'] = $iG['self_guid'];
+        //         $array[$iG['self_guid']]['parent_guid'] = $iG['parent_guid'];
+        //         $array[$iG['self_guid']]['Groups'] = Group::getInnerGroup($iG['self_guid']);    
+        //         $array[$iG['self_guid']]['Machines'] = Machine::getInnerMachines($iG['self_guid']);
+        //     }
+
+        // }
         if(count($array) > 0)
         {
             return $array;
         }
-
+       
         return [];
     }
 
     public static function setBlockStatus($selfId, $st)
     {
-        // добавить / удалить в таблице groupsBlock заблокированную группу
-        
-        // $db = Db::getInstance();
-        // $result = $db->query('SELECT * FROM `groupsBlock` WHERE self_guid = :selfGuid ;', [':selfGuid' => $selfId], static::class);
-        // if(count($result[0])>0)
-        // {
-        //     $result = $db->query('UPDATE `groupsBlock` SET WHERE self_guid = :selfGuid;', [':selfGuid' => $selfId], static::class);
-        // }
         $group = self::getBySelfId($selfId);
         $group->setBlocked((int)$st);
         $group->save();
     }
-    // public static function saveBlockGroup()
-    // {
-    //     $db = Db::getInstance();
-    //     $result = $db->queryAssoc('SELECT * FROM `groups` WHERE is_blocked = 1;', []);
-    //     $sql = 'TRUNCATE TABLE groupsBlock;';
-    //     $resultTrancate = $db->query($sql);
 
-    //     foreach($result as $blockGroup)
-    //     {
-    //         $sql .= 'INSERT INTO groupsBlock ("self_guid") VALUES ('.$blockGroup["self_guid"].')';
-    //     }
-    //     $db->query($sql);
-    // }
+    public static function getCountActionGroup()
+    {
+        $db = Db::getInstance();
+        $result = $db->query('SELECT COUNT(*) as count FROM `'.static::getTableName().'` WHERE is_blocked IS not true;',[]);
+        return $result[0]->count;
+    }
 }

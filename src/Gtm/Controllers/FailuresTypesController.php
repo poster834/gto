@@ -7,6 +7,7 @@ use Gtm\Exceptions\NotFoundException;
 use Gtm\Exceptions\InvalidArgumentException;
 use Gtm\Exceptions\NotAllowException;
 use Gtm\Models\FailuresTypes\FailuresType;
+use Gtm\Models\Failures\Failure;
 
 ini_set('display_errors',1);
 error_reporting(E_ALL);
@@ -40,8 +41,7 @@ class FailuresTypesController extends AbstractController
 
     public function delete(int $id)
     {
-        // $failureTest = Failure::findOneByColumn('type_id',$id); //проверить в базе на наличие в других таблицах
-        $failureTest = null;
+        $failureTest = Failure::findOneByColumn('type_id',$id); //проверить в базе на наличие в других таблицах
         $failuresType = FailuresType::getById($id);
         if ($failureTest !== null) {
             $this->view->renderHtml('errors/relationError.php', ['table'=>'Поломки', 'data'=>"id => ".$failureTest->getId()]);

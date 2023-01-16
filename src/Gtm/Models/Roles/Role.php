@@ -13,6 +13,10 @@ class Role extends ActiveRecordEntity
 
     /** @var string*/
     protected $description;
+
+    /** @var int*/
+    protected $editable;
+    
     
     protected static function getTableName()
     {
@@ -44,6 +48,19 @@ class Role extends ActiveRecordEntity
         $this->description = $newDescription;
     }
 
+
+
+    public function getEditable()
+    {
+        return $this->editable;
+    }
+
+    public function setEditable($Editable)
+    {
+        $this->editable = $Editable;
+    }
+
+
     public function updateFromArray(array $fields)
     {
         $testUni = Role::uniquenessColumnTest($fields,'name');
@@ -60,6 +77,7 @@ class Role extends ActiveRecordEntity
         
         $this->setName($fields['name']);
         $this->setDescription($fields['description']);
+        $this->setEditable(1);
         $this->save();
         return $this;
     }

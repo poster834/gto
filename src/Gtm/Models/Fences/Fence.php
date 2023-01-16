@@ -4,6 +4,7 @@ namespace Gtm\Models\Fences;
 use Gtm\Models\ActiveRecordEntity;
 use Gtm\Services\Db;
 use Gtm\Models\Companys\Company;
+use Gtm\Models\Coords\Coord;
 
 class Fence extends ActiveRecordEntity
 {
@@ -21,6 +22,13 @@ class Fence extends ActiveRecordEntity
         
         /** @var float*/
         protected $square;
+    
+        /** @var array*/
+        protected $xCoords;
+
+        /** @var array*/
+        protected $yCoords;
+
 
     public static function getTableName()
     {
@@ -32,29 +40,39 @@ class Fence extends ActiveRecordEntity
         return 5;
     }
 
-    public function setName($newName)
+    public function setName($val)
     {
-        $this->name = $newName;
+        $this->name = $val;
     }
 
-    public function setGuid($newGuid)
+    public function setGuid($val)
     {
-        $this->guid = $newGuid;
+        $this->guid = $val;
     }
 
-    public function setUid($newUid)
+    public function setUid($val)
     {
-        $this->uid = $newUid;
+        $this->uid = $val;
     }
 
-    public function setPerimeter($newPerimeter)
+    public function setPerimeter($val)
     {
-        $this->perimeter = $newPerimeter;
+        $this->perimeter = $val;
     }
 
-    public function setSquare($newSquare)
+    public function setSquare($val)
     {
-        $this->square = $newSquare;
+        $this->square = $val;
+    }
+
+    public function setXCoords($arr)
+    {
+        $this->xCoords = $arr;
+    }
+
+    public function setYCoords($arr)
+    {
+        $this->yCoords = $arr;
     }
     
 
@@ -112,5 +130,15 @@ class Fence extends ActiveRecordEntity
             $fence->setSquare($fenceI['square']);
             $fence->save();
         }
+    }
+
+    public function getXCoords()
+    {
+        return Coord::getXCoords($this->uid);
+    }
+
+    public function getYCoords()
+    {
+        return Coord::getYCoords($this->uid);
     }
 }

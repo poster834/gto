@@ -6,6 +6,9 @@
   body {
     height: 100%;
   }
+  hr{
+    margin: 7px 0!important;
+  }
   .wrapper {
     position: relative;
     min-height: 100%;
@@ -21,6 +24,11 @@
     height: 80px;
   }
 
+  .menu{
+    background: #eee;
+    border-radius: 10px;
+    padding: 5px;
+  }
 
 .topLine{
     border-bottom: 5px solid rgb(112, 6, 6);
@@ -63,7 +71,8 @@ label{
 
 .adminMenu li{
     margin-bottom: 5px;
-    background-color: #aaa;
+    background-color: #fff;
+    border-bottom: 1px solid #640707;
     width: 100%;
     padding-left: 5px;
     cursor: pointer;
@@ -79,10 +88,35 @@ label{
     color: inherit;
 }
 
-.subMenu
+.mainMenu{
+    text-align: left;
+    list-style: none;
+    padding-left: 0px;
+}
+
+.mainMenu li{
+    margin-bottom: 5px;
+    background-color: #ccc;
+    width: 100%;
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+.mainMenu li:hover, .activePoint{
+    background-color: #640707 !important;;
+    color: #fff;
+}
+
+.mainMenu a{
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* .subMenu
 {
     display: none;
-}
+} */
 
 
 #loginName,
@@ -133,16 +167,31 @@ label{
 .menu_G_L{
     display: none;
     cursor: pointer;
+    border-bottom: 2px solid transparent;
+    padding-left: 5px;
+}
+
+.openGroup{
+    border-bottom: 2px solid #640707;
+    background-color: #ccc;
+    border-radius: 5px;
 }
 
 .menu_G_L_0{
+    width: 100%;
+    display: block;
+}
+.menu_G_L_0:hover{
     cursor: pointer;
+    background-color: #640707;
+    color: #fff;
+    border-radius: 5px;
 }
 
 .menuMachine
 {
     display: none;
-    border-bottom:2px solid #aaa;
+    border-bottom: 2px solid #212529;
 }
 
 .visible
@@ -165,7 +214,10 @@ label{
 {
     display: none;
 }
-
+.menu_G_L:hover{
+    background-color:#640707;
+    color: #fff;
+}
 .pm{
     margin-right: 5px;
     color:  #640707;
@@ -179,11 +231,10 @@ label{
 }
 
 .menuMachineActive{
-    border-bottom: 2px solid #aaa;
-    border-left:10px solid #640707;
-    /* color:#fff; */
+    border-left: 10px solid #640707;
     font-style: italic;
-    font-weight: bold;
+    color: #fff!important;
+    background-color: #640707;
 }
 
 .menuMachineDeActive{
@@ -193,23 +244,25 @@ label{
     /* color:#000; */
 }
 
-#closeSearchBtn{
+#closeSearchBtn, #HC_closeSearchBtn{
     cursor: pointer;
     font-weight: bold;
     color: #d50505;
     position: absolute;
-    right: 0px;
+    right: 5px;
     top: 5px;
 }
 
 .menuMachine {
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
+    color: black;
 }
 
 .menuMachine:hover {
-    border-bottom: 2px solid #aaa;
-    border-left:10px solid #934e4e;
+    border-bottom: 2px solid #640707;
+    border-left:5px solid #640707;
+    padding-left: 5px;
 }
 
 .notActiveForUser{
@@ -220,4 +273,226 @@ label{
 .activeForUser{
     text-decoration: none;
     color: #000;
+}
+
+.iconBefore{
+    width: 10%;
+    display: inline-block;
+}
+
+.redBC{
+    border: 1px dashed #f00;
+    padding: 5px;
+}
+
+.greyBC{
+    border: 1px dashed #aaa;
+    padding: 5px;
+}
+
+.greenBC{
+    border: 1px dashed #40a50d;
+    padding: 5px;
+}
+
+.m2px{
+    margin: 2px;
+}
+
+.solvTask{
+    display: none;
+}
+.topTableTask{
+    background-color: #ccc; 
+    border: 1px solid #ccc;
+}
+
+.failuresPhoto{
+    width: 100px;
+    height: auto;
+}
+
+.editBlock{
+    position: absolute;
+    width: 0px;
+}
+.editBlock span{
+    position: relative;
+    left: -20px;
+    background-color: #fff;
+}
+
+.deletePhoto:hover{
+    cursor: pointer;
+    color: #f00;
+}
+
+label .addPhoto{
+    margin: 0;
+    float: none;
+    cursor: pointer;
+}
+
+.modalFailuresPhoto{
+    width: 100%;
+}
+
+i.zoom{
+    color: #000;
+    right: 100px;
+    position: relative;
+    background: #fff;
+}
+I.zoom:hover{
+    cursor: pointer;
+    color: #f00;
+}
+
+.failureBtnBlock, .btnDetailedHide{
+    display: none;
+}
+
+.warning{
+    background: #fff70b;
+    padding: 5px;
+}
+
+textarea{
+    padding: 0px 5px;
+}
+
+.failName{
+    color: #640707;
+    background-color: #ccc;
+    padding: 3px 5px;
+    border-radius: 5px;
+    text-align: center;
+}
+.hideProp{
+    display: none;
+}
+
+.showProp{
+    background-color: #ccc;
+    padding: 5px 10px;
+}
+
+.activeBtn{
+    background-color: #640707!important;
+}
+
+.subMenu{
+    /* background-color: #eee; */
+    /* border-radius: 5px; */
+    padding: 0;
+}
+
+.subMenu li{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    padding-left: 10px;
+    width: 100%;
+    margin-top: 5px;
+    background-color: #ccc;
+    border-bottom: 3px solid #7c7b7b;
+}
+
+.subMenu li:hover{
+    cursor: pointer;
+    background-color: #640707;
+    color: #fff;
+}
+
+.regionBtn{
+    margin-bottom: 5px;
+}
+
+.regionFailuresTable tr td{
+    padding: 3px;
+    border: 1px solid #aaa;
+}
+.serviceMan{
+    padding: 0;
+    display: inline;
+    float: none;
+    margin: 0;
+    margin-left: 10px;
+}
+.serviceManLI{
+    background-color: #7c7b7b;
+}
+
+.simpleTable tr td{
+padding: 5px;
+border-bottom: 1px solid #ccc;
+}
+
+.simpleTable th{
+    font-weight: bold;
+    border-top: 3px solid #ccc;
+    border-bottom: 3px solid #ccc;
+}
+
+.uploadPhotoForm{
+    display: none;
+}
+
+.saved{
+    background-color: #d1ffd1;
+    /* font-weight: bold; */
+}
+.parkingReasonBtn{
+    display: none;
+}
+
+.hCar:hover{
+    cursor: pointer;
+    color: #fff!important;
+    background-color: #640707;
+}
+.hCarSelect{
+    border-left: 10px solid #640707!important;
+    font-style: italic;
+    color: #640707!important;
+    font-weight: bold;
+}
+
+.menuMachineDeActiveHC{
+    border-left: 10px solid #640707;
+    font-style: italic;
+    color: #fff!important;
+    background-color: #640707;
+}
+
+.menuMachineActiveHC{
+    border-bottom: 2px solid #aaa;
+    border-left:10px solid #fff;
+}
+.parkingComment{
+    font-size: 0.7em;
+    margin: 0 5px;
+}
+
+.saveCommentBtn{
+    position:absolute;
+}
+.archiveFailures{
+    background-color: #ffe8a1;
+}
+.trackAnalysis{
+    background-color: #fdd2d2;
+    padding: 5px;
+}
+
+.doneFailure tr{
+border-bottom: 1px dashed #777;
+}
+
+.doneFailure td{
+    padding: 5px;
+}
+
+.doneFailure td.vertical{
+    border-left: 2px dashed #777;
 }

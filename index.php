@@ -30,6 +30,8 @@ try{
     $controllerName = $controllerAndAction[0];
     $actionName = $controllerAndAction[1];
 
+    // var_dump($controllerName);
+    // var_dump($actionName);
     $controller = new $controllerName();
     $controller -> $actionName(...$matches);
 } catch (\Gtm\Exceptions\NotFoundException $e) {

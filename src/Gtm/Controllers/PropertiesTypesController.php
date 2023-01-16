@@ -6,8 +6,8 @@ use Gtm\Exceptions\InvalidArgumentException;
 use Gtm\Models\PropertiesTypes\PropertiesType;
 
 
-ini_set('display_errors',1);
-error_reporting(E_ALL);
+// ini_set('display_errors',1);
+// error_reporting(E_ALL);
 class PropertiesTypesController extends AbstractController
 {
     public function editRow(int $id)

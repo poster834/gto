@@ -1,0 +1,57 @@
+<?php
+namespace Gtm\Models\Coords;
+
+use Gtm\Models\ActiveRecordEntity;
+use Gtm\Services\Db;
+use Gtm\Models\Companys\Company;
+use Gtm\Models\Machines\Machine;
+
+class CoordRoad extends ActiveRecordEntity
+{
+    /** @var string*/
+    protected $fenceUid;
+
+    /** @var float*/
+    protected $xCoord;
+
+    /** @var float*/
+    protected $yCoord;
+    
+    public function getFenceUid()
+    {
+        return $this->fenceUid;
+    }
+    public function setFenceUid($val)
+    {
+        $this->fenceUid = $val;
+    }
+
+    public function getXCoord()
+    {
+        return $this->xCoord;
+    }
+    public function setXCoord($val)
+    {
+        $this->xCoord = $val;
+    }
+
+    public function getYCoord()
+    {
+        return $this->yCoord;
+    }
+    public function setYCoord($val)
+    {
+        $this->yCoord = $val;
+    }
+
+    public static function getTableName()
+    {
+        return 'coordsRoads';
+    }
+
+    public static function getCountPerPage()
+    {
+        return 5;
+    }
+
+}

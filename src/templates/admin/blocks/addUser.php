@@ -13,7 +13,7 @@
                 <select class="editInput" name="roleId" id="roleId">
                 <option value="null" disabled selected>Выберете группу пользователя</option>
                     <?php foreach($roles as $role):?>
-                        <option value="<?=$role->getId();?>"><?=$role->getName();?></option>
+                        <option value="<?=$role->getId();?>"><?=$role->getName()." (".$role->getDescription().")"?></option>
                     <?php endforeach;?>
                 </select>
                 <br><br>

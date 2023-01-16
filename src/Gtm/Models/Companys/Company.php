@@ -24,6 +24,16 @@ class Company extends ActiveRecordEntity
         /** @var string*/
         protected $dateUpdate;
 
+        /** @var string*/
+        protected $agLogin;
+
+        /** @var string*/
+        protected $agServer;
+        
+        /** @var string*/
+        protected $agToken;
+
+
     protected static function getTableName()
     {
         return 'company';
@@ -33,9 +43,40 @@ class Company extends ActiveRecordEntity
         return 1;
     }
 
+    public function getAgToken()
+    {
+        return $this->agToken;
+    }
+    public function setAgToken($val)
+    {
+        $this->agToken = $val;
+    }
+
+    public function getAgServer()
+    {
+        return $this->agServer;
+    }
+    public function setAgServer($val)
+    {
+        $this->agServer = $val;
+    }
+
+    public function getAgLogin()
+    {
+        return $this->agLogin;
+    }
+    public function setAgLogin($val)
+    {
+        $this->agLogin = $val;
+    }
+
     public function getName()
     {
         return $this->name;
+    }
+    public function setName($newName)
+    {
+        $this->name = $newName;
     }
 
     public function getLogo()
@@ -66,11 +107,6 @@ class Company extends ActiveRecordEntity
     public function setDateUpdate($newDateUpdate)
     {
         $this->dateUpdate = $newDateUpdate;
-    }
-
-    public function setName($newName)
-    {
-        $this->name = $newName;
     }
 
     public function setPhone($newPhone)

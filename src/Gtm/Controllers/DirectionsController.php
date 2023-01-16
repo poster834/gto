@@ -7,9 +7,10 @@ use Gtm\Exceptions\NotFoundException;
 use Gtm\Exceptions\InvalidArgumentException;
 use Gtm\Exceptions\NotAllowException;
 use Gtm\Models\Directions\Direction;
+use Gtm\Models\Failures\Failure;
 
-ini_set('display_errors',1);
-error_reporting(E_ALL);
+// ini_set('display_errors',1);
+// error_reporting(E_ALL);
 class DirectionsController extends AbstractController
 {
     public function editRow(int $id)
@@ -68,6 +69,31 @@ class DirectionsController extends AbstractController
     public function showAdd()
     {
         $this->view->renderHtml('admin/blocks/addDirection.php', []);
+    }
+
+    public function selectDirection($id)
+    {
+        if ($id == 0) {
+            $regions = Region::findAll();
+        } else {
+            $regions = Region::getByDirectionId($id);
+        }
+
+        
+
+        $activeFailureByRegions = [];
+        foreach($regions as $region)
+        {
+            $id = $region->getId();
+            $activeFailures = count(Failure::findActiveByRegionId($id,1));
+            $activeFailureByRegions[$id] = $activeFailures;
+        }
+
+        $this->view->renderHtml('main/blocks/showRegions.php',[
+            'regions'=>$regions,
+            'id'=>$id,
+            'activeFailureByRegions'=>$activeFailureByRegions,
+        ]); 
     }
 
 }

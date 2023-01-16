@@ -14,18 +14,47 @@ use Gtm\Models\Properties\Properties;
 use Gtm\Models\PropertiesTypes\PropertiesType;
 use Gtm\Models\Devices\Device;
 use Gtm\Models\Schemas\Schema;
+use Gtm\Models\WialonAccounts\WialonAccount;
 
  ini_set('display_errors',1);
  error_reporting(E_ALL);
 
 class AdminController extends AbstractController
 {
-    public function mainAdmin()
+    public function getAgToken()
     {
+        $arr = $_POST;
+        $url = $arr['serverUrl'];
+        $login = $arr['serverLogin'];
+        $password = $arr['serverPassword'];
+        $token = file_get_contents('https://'.$url.'/ServiceJSON/Login?UserName='.$login.'&Password='.$password.'&UTCOffset=180');
+        $company = Company::getById(1);
+        $company->setAgServer($url);
+        $company->setAgLogin($login);
+        $company->setAgToken($token);
+        $company->save();
+    }
+    
+    public function mainAdmin()
+    {   
         $this->view->renderHtml('admin/mainAdmin.php',[
-        
+                    
         ]);
     }
+
+    // public function getWialonSid($token)
+    // {
+    //     $json = file_get_contents('https://hst-api.wialon.com/wialon/ajax.html?svc=token/login&params={"token":"'.$token.'","fl":1}');
+    //     $jsonArr = json_decode($json, true);
+    //     $eid = $jsonArr['eid'];
+    //     // var_dump($eid);
+    //     $get = 'https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params={"spec":{"itemsType":"avl_unit","propName":"sys_name","propValueMask":"*","sortType":"0","propType":"0","or_logic":""},"force":1,"flags":1,"from":0,"to":0}&sid='.$eid;
+    //     // var_dump($get);
+    //     $cars = file_get_contents($get);
+
+    //     $carsArr = json_decode($cars, true);
+    //     var_dump($carsArr['items']);
+    // }
 
     public function company()
     {
@@ -127,6 +156,10 @@ class AdminController extends AbstractController
 
     public function schema()
     {
+        $company = Company::getById(1);
+        $token = $company->getAgToken();
+        $login = $company->getAgLogin();
+        $server = $company->getAgServer();
         $groupsCount = Group::getCountInTable();
         $groupsTree = Schema::getSchemaTree();
         $machinesCount = Machine::getCountInTable();
@@ -138,8 +171,12 @@ class AdminController extends AbstractController
             'devicesCount'=>$devicesCount,
             'dateTime'=>$dateTime,
             'groupsTree'=>$groupsTree,
+            'token'=>$token,
+            'login'=>$login,
+            'server'=>$server,
         ]);
     }
+
 
     public function deleteLogo()
     {
@@ -227,3 +264,4 @@ class AdminController extends AbstractController
 
    
 }
+

@@ -2,6 +2,8 @@
 namespace Gtm\Models\Devices;
 
 use Gtm\Models\ActiveRecordEntity;
+use Gtm\Models\Machines\Machine;
+use Gtm\Services\Db;
 
 
 class Device extends ActiveRecordEntity
@@ -56,5 +58,20 @@ class Device extends ActiveRecordEntity
             $device->setUid($uid);
             $device->save();
         }
+    }
+
+    public static function getCountActionDevice()
+    {
+        $actionMachinesUid = Machine::getCountActionMachine();
+
+        $db = Db::getInstance();
+        $allDevices = $db->queryAssoc('SELECT * FROM `'.static::getTableName().'` WHERE 1;',[]);
+        $allActiveDevicesSN = [];
+        foreach($allDevices as $device){
+            if (in_array($device['uid'],$actionMachinesUid)) {
+                $allActiveDevicesSN[]=$device['glonass_serial'];
+            }   
+        }
+        return ($allActiveDevicesSN);
     }
 }

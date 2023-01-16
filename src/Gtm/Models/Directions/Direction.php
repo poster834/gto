@@ -29,8 +29,9 @@ class Direction extends ActiveRecordEntity
 
     public function getRegionsCountInDirection()
     {
+        $id = $this->getId();
             $db = Db::getInstance();
-            $result = $db->query('SELECT COUNT(*) as count FROM `regions` WHERE direction=:id;',[':id' => $this->id]);
+            $result = $db->query('SELECT COUNT(*) as count FROM `regions` WHERE direction=:id;',[':id' => $id]);
             return $result[0]->count;
     }
 
@@ -55,4 +56,6 @@ class Direction extends ActiveRecordEntity
         $this->save();
         return $this;
     }
+
+
 }

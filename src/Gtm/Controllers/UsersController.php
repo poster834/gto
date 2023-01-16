@@ -8,9 +8,10 @@ use Gtm\Models\Users\User;
 use Gtm\Models\Users\UsersAuthService;
 use Gtm\Models\Roles\Role;
 use Gtm\Exceptions\InvalidArgumentException;
-use Gtm\Models\Breakages\Breakage;
+use Gtm\Models\Failures\Failure;
 use Gtm\Exceptions\NotAllowException;
 use Gtm\Exceptions\NotFoundException;
+use Gtm\Models\Offenses\Offense;
 
 class UsersController extends AbstractController
 {
@@ -112,14 +113,23 @@ class UsersController extends AbstractController
                     $this->view->renderHtml('errors/invalidArgument.php', ['error'=>'Нет пользователя с таким id. <a href="/gtm">Главная</a>']);
                     exit();
                 }
-                $breakage = Breakage::findOneByColumn('user_id',$id);
+                $breakage = Failure::findOneByColumn('user_id',$id);
                 if (empty($breakage)) {
-                    $breakage = Breakage::findOneByColumn('user_service',$id);
+                    $breakage = Failure::findOneByColumn('user_service',$id);
                 }
+                $offenses = Offense::findOneByColumn('user_id',$id);
+                if(empty($offenses))
+                {
+                    $offenses = Offense::findOneByColumn('user_service',$id);
+                }
+
                 if (!empty($breakage)) {
                     $this->view->renderHtml('errors/relationError.php', ['table'=>'Поломки', 'data'=>"id => ".$breakage->getId()]);
                     exit();
-                } else if($deletedUser->getId() == 1){
+                } else if(!empty($offenses)){
+                    $this->view->renderHtml('errors/relationError.php', ['table'=>'Нарушения', 'data'=>"id => ".$offenses->getId()]);
+                    exit();
+                }else if($deletedUser->getId() == 1){
                     $this->view->renderHtml('errors/invalidArgument.php', ['error'=>'Пользователь <b><i>'.$deletedUser->getLogin().'</b></i> является администратором системы. Удалить нельзя.']);
                     exit();
                 } else {
